@@ -365,6 +365,15 @@
 
             // initialize UI on load
             updateAuthUI();
+
+            // Ensure Home section is visible on first open (if no hash)
+            if (!location.hash) {
+                const homeEl = document.getElementById('home');
+                if (homeEl) {
+                    // give layout a tick then scroll so content is visible
+                    setTimeout(() => homeEl.scrollIntoView({ behavior: 'smooth' }), 50);
+                }
+            }
         </script>
 </body>
 </html>
