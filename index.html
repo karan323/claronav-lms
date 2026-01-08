@@ -77,15 +77,38 @@
                 </button>
             </div>
         </div>
-        <div id="sideMenu" style="display:none; position:absolute; z-index:2000;">
+                <div id="sideMenu" style="display:none; position:absolute; z-index:2000;">
             <div class="card" style="width:200px;">
                 <div class="list-group list-group-flush">
+                                        <a href="#home" id="menuHome" class="list-group-item list-group-item-action">Home</a>
                     <a href="#about" class="list-group-item list-group-item-action">About</a>
                     <a href="#support" class="list-group-item list-group-item-action">Support</a>
                 </div>
             </div>
         </div>
     </header>
+
+        <!-- Home Section -->
+        <section id="home" class="py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h2>About Claronav</h2>
+                        <p class="lead">Navient is an innovative image-guided navigation system, utilizing the latest technologies in the field and bringing simplicity, accuracy and affordability to the surgical navigation system. Navient offers a truly portable cart along with powerful and intuitive software. Its instruments are steam sterilizable, and there is no disposable cost per procedure.</p>
+                        <p>Navient is offered in two configurations, Navient and Navient ENT. Learn more at <a href="https://medical.claronav.com/" target="_blank">medical.claronav.com</a>.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-3">
+                            <h5>Contact</h5>
+                            <p class="mb-1"><strong>Email:</strong> <a href="mailto:info@claronav.com">info@claronav.com</a></p>
+                            <p class="mb-1"><strong>Phone:</strong> +1 (647) 951-1525</p>
+                            <p class="mb-1"><strong>Toll Free:</strong> +1 (844) 628-4336</p>
+                            <p class="mb-0"><strong>Address:</strong><br>1140 Sheppard Ave W Unit 10<br>Toronto, Ontario, Canada M3K 2A2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
     <div class="container mt-5">
         <ul class="nav nav-tabs justify-content-center" id="learningTabs" role="tablist">
@@ -291,6 +314,16 @@
                     sideMenu.style.display = 'none';
                 }
             });
+
+            // Menu Home link scroll handler
+            const menuHome = document.getElementById('menuHome');
+            if (menuHome) {
+                menuHome.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+                    sideMenu.style.display = 'none';
+                });
+            }
 
             authForm.addEventListener('submit', (e) => {
                 e.preventDefault();
