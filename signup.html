@@ -64,14 +64,30 @@
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, firstName, lastName, serial, hospital, password })
         });
-        const j = await res.json();
+        // try to parse JSON, if server returned HTML (e.g. 404 page) handle gracefully
+        let j;
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          j = await res.json();
+        } else {
+          const text = await res.text();
+          // server returned HTML (likely 404 from static host) or plain text error
+          throw new Error(text || 'Signup failed (non-JSON response)');
+        }
         if (!res.ok) throw new Error(j.error || 'Signup failed');
         localStorage.setItem('lmsToken', j.token);
         localStorage.setItem('lmsName', j.name);
         // use relative path to work on GitHub Pages
         window.location.href = 'index.html#home';
       } catch (err) {
-        errorEl.textContent = err.message; errorEl.style.display = '';
+        // If error contains HTML, strip tags for display
+        let msg = err.message || 'Signup failed';
+        if (msg.trim().startsWith('<')) {
+          // crude strip HTML
+          msg = msg.replace(/<[^>]*>/g, '').trim();
+        }
+        errorEl.textContent = msg;
+        errorEl.style.display = '';
       }
     });
   </script>

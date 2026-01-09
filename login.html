@@ -43,14 +43,23 @@
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         });
-        const j = await res.json();
+        let j;
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          j = await res.json();
+        } else {
+          const text = await res.text();
+          throw new Error(text || 'Login failed (non-JSON response)');
+        }
         if (!res.ok) throw new Error(j.error || 'Login failed');
         localStorage.setItem('lmsToken', j.token);
         localStorage.setItem('lmsName', j.name);
         // use relative path to work on GitHub Pages
         window.location.href = 'index.html#home';
       } catch (err) {
-        errorEl.textContent = err.message; errorEl.style.display = '';
+        let msg = err.message || 'Login failed';
+        if (msg.trim().startsWith('<')) msg = msg.replace(/<[^>]*>/g, '').trim();
+        errorEl.textContent = msg; errorEl.style.display = '';
       }
     });
   </script>
