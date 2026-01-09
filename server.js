@@ -20,13 +20,16 @@ function writeData(data) {
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+// capture raw body for debugging parse errors
+app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf && buf.toString(); } }));
 
 // Serve static files (front-end)
 app.use(express.static(path.join(__dirname)));
 
 app.post('/api/signup', (req, res) => {
-  const { email, firstName, lastName, serial, hospital, password } = req.body;
+  // debug log to help diagnose malformed requests
+  if (req.rawBody) console.log('RAW SIGNUP BODY:', req.rawBody);
+  const { email, firstName, lastName, serial, hospital, password } = req.body || {};
   if (!email || !firstName || !lastName || !serial || !hospital || !password) return res.status(400).json({ error: 'Missing fields' });
   const data = readData();
   if (data.users[email]) return res.status(400).json({ error: 'Email already registered' });
@@ -70,6 +73,16 @@ app.post('/api/progress', (req, res) => {
   data.progress[email][section] = value;
   writeData(data);
   res.json({ success: true });
+});
+
+// JSON parse error handler - return JSON instead of HTML and log raw body
+app.use((err, req, res, next) => {
+  if (err && (err.type === 'entity.parse.failed' || err instanceof SyntaxError)) {
+    console.error('JSON parse error:', err && err.message);
+    console.error('Raw body at error:', req && req.rawBody);
+    return res.status(400).json({ error: 'Invalid JSON in request body' });
+  }
+  next(err);
 });
 
 const PORT = process.env.PORT || 3000;
