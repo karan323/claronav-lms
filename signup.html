@@ -68,7 +68,8 @@
         if (!res.ok) throw new Error(j.error || 'Signup failed');
         localStorage.setItem('lmsToken', j.token);
         localStorage.setItem('lmsName', j.name);
-        window.location.href = '/index.html#home';
+        // use relative path to work on GitHub Pages
+        window.location.href = 'index.html#home';
       } catch (err) {
         errorEl.textContent = err.message; errorEl.style.display = '';
       }

@@ -162,7 +162,8 @@
                     updateAuthUI();
                     refreshAuthState();
                 } else {
-                    window.location.href = '/login.html';
+                    // use relative path so GitHub Pages resolves correctly
+                    window.location.href = 'login.html';
                 }
             });
 
