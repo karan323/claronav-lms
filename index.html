@@ -210,11 +210,11 @@
                         const el = document.getElementById('spineProgressBar');
                         el.style.width = (p.spine * 1) + '%'; el.setAttribute('aria-valuenow', p.spine);
                         el.textContent = (p.spine * 1) + '%';
-                    }
-                    if (p.ent && document.getElementById('entProgressBar')) {
-                        const el = document.getElementById('entProgressBar');
-                        el.style.width = (p.ent * 1) + '%'; el.setAttribute('aria-valuenow', p.ent);
-                        el.textContent = (p.ent * 1) + '%';
+                    if (!location.hash) {
+                        const homeEl = document.getElementById('home');
+                        if (homeEl) {
+                            setTimeout(() => homeEl.scrollIntoView({ behavior: 'smooth' }), 50);
+                        }
                     }
                     document.querySelectorAll('.auth-only').forEach(el => el.style.display = '');
                     document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
