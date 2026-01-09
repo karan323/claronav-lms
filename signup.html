@@ -13,9 +13,19 @@
         <div class="card p-4">
           <h3 class="mb-3">Create Account</h3>
           <form id="signupForm">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">First Name</label>
+                <input id="firstName" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Last Name</label>
+                <input id="lastName" class="form-control" required>
+              </div>
+            </div>
             <div class="mb-3">
-              <label class="form-label">Name</label>
-              <input id="name" class="form-control" required>
+              <label class="form-label">Email</label>
+              <input id="email" type="email" class="form-control" required>
             </div>
             <div class="mb-3">
               <label class="form-label">System Serial Number</label>
@@ -42,7 +52,9 @@
   <script>
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('name').value.trim();
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
       const serial = document.getElementById('serial').value.trim();
       const hospital = document.getElementById('hospital').value.trim();
       const password = document.getElementById('password').value;
@@ -50,7 +62,7 @@
       try {
         const res = await fetch('/api/signup', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, serial, hospital, password })
+          body: JSON.stringify({ email, firstName, lastName, serial, hospital, password })
         });
         const j = await res.json();
         if (!res.ok) throw new Error(j.error || 'Signup failed');

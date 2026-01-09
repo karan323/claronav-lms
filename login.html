@@ -15,8 +15,8 @@
           <h3 class="mb-3">Login</h3>
           <form id="loginForm">
             <div class="mb-3">
-              <label class="form-label">System Serial Number</label>
-              <input id="serial" class="form-control" required>
+              <label class="form-label">Email</label>
+              <input id="email" type="email" class="form-control" required>
             </div>
             <div class="mb-3">
               <label class="form-label">Password</label>
@@ -35,13 +35,13 @@
   <script>
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const serial = document.getElementById('serial').value.trim();
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const errorEl = document.getElementById('error');
       try {
         const res = await fetch('/api/login', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ serial, password })
+          body: JSON.stringify({ email, password })
         });
         const j = await res.json();
         if (!res.ok) throw new Error(j.error || 'Login failed');
