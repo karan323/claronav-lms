@@ -39,7 +39,8 @@
       const password = document.getElementById('password').value;
       const errorEl = document.getElementById('error');
       try {
-        const res = await fetch('/api/login', {
+        const API_BASE = localStorage.getItem('API_BASE') || '';
+        const res = await fetch(API_BASE + '/api/login', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         });
@@ -49,7 +50,7 @@
           j = await res.json();
         } else {
           const text = await res.text();
-          throw new Error(text || 'Login failed (non-JSON response)');
+          throw new Error(text || `Login failed (status ${res.status})`);
         }
         if (!res.ok) throw new Error(j.error || 'Login failed');
         localStorage.setItem('lmsToken', j.token);

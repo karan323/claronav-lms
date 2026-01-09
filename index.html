@@ -178,7 +178,8 @@
                 }
                 if (lmsArea) lmsArea.style.display = '';
                 try {
-                    const resp = await fetch('/api/progress?token=' + encodeURIComponent(token));
+                    const API_BASE = localStorage.getItem('API_BASE') || '';
+                    const resp = await fetch(API_BASE + '/api/progress?token=' + encodeURIComponent(token));
                     const j = await resp.json();
                     if (!resp.ok) throw new Error(j.error || 'Failed to fetch progress');
                     const p = j.progress || {};
