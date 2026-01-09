@@ -151,36 +151,30 @@
                 if (token && name) {
                     authBtn.textContent = name + ' (Logout)';
                 } else if (localUser) {
-                    try {
-                        const u = JSON.parse(localUser);
-                        authBtn.textContent = (u.name || 'User') + ' (Logout)';
-                    } catch (e) {
-                        authBtn.textContent = 'Logout';
-                    }
-                } else {
-                    authBtn.textContent = 'Login / Sign up';
-                }
+                    try { const u = JSON.parse(localUser); authBtn.textContent = (u.name || 'User') + ' (Logout)'; }
+                    catch (e) { authBtn.textContent = 'Logout'; }
+                } else { authBtn.textContent = 'Login / Sign up'; }
             }
 
             authBtn.addEventListener('click', () => {
                 const token = localStorage.getItem('lmsToken');
-                if (token) {
+                const localUser = localStorage.getItem('lmsUser');
+                if (token || localUser) {
                     localStorage.removeItem('lmsToken');
                     localStorage.removeItem('lmsName');
+                    localStorage.removeItem('lmsUser');
                     updateAuthUI();
                     refreshAuthState();
                 } else {
-                    // use relative path so GitHub Pages resolves correctly
                     window.location.href = 'login.html';
                 }
             });
 
-            // Show or hide LMS area depending on backend login token
+            // Show or hide LMS area depending on backend login token or local user
             const lmsArea = document.getElementById('lmsArea');
             async function refreshAuthState() {
                 const token = localStorage.getItem('lmsToken');
                 const localUser = localStorage.getItem('lmsUser');
-                // If no server token but a local client user exists, show LMS sections
                 if (!token) {
                     if (localUser) {
                         if (lmsArea) lmsArea.style.display = '';
@@ -193,7 +187,6 @@
                     updateAuthUI();
                     return;
                 }
-                // token exists: show LMS and fetch per-user progress
                 if (lmsArea) lmsArea.style.display = '';
                 try {
                     const API_BASE = localStorage.getItem('API_BASE') || 'https://claronav-lms.onrender.com';
@@ -203,24 +196,20 @@
                     const p = j.progress || {};
                     if (p.cranial && document.getElementById('cranialProgressBar')) {
                         const el = document.getElementById('cranialProgressBar');
-                        el.style.width = (p.cranial * 1) + '%'; el.setAttribute('aria-valuenow', p.cranial);
-                        el.textContent = (p.cranial * 1) + '%';
+                        el.style.width = (p.cranial * 1) + '%'; el.setAttribute('aria-valuenow', p.cranial); el.textContent = (p.cranial * 1) + '%';
                     }
                     if (p.spine && document.getElementById('spineProgressBar')) {
                         const el = document.getElementById('spineProgressBar');
-                        el.style.width = (p.spine * 1) + '%'; el.setAttribute('aria-valuenow', p.spine);
-                        el.textContent = (p.spine * 1) + '%';
-                    if (!location.hash) {
-                        const homeEl = document.getElementById('home');
-                        if (homeEl) {
-                            setTimeout(() => homeEl.scrollIntoView({ behavior: 'smooth' }), 50);
-                        }
+                        el.style.width = (p.spine * 1) + '%'; el.setAttribute('aria-valuenow', p.spine); el.textContent = (p.spine * 1) + '%';
+                    }
+                    if (p.ent && document.getElementById('entProgressBar')) {
+                        const el = document.getElementById('entProgressBar');
+                        el.style.width = (p.ent * 1) + '%'; el.setAttribute('aria-valuenow', p.ent); el.textContent = (p.ent * 1) + '%';
                     }
                     document.querySelectorAll('.auth-only').forEach(el => el.style.display = '');
                     document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
                     updateAuthUI();
                 } catch (err) {
-                    // invalid token: clear and hide
                     localStorage.removeItem('lmsToken');
                     if (lmsArea) lmsArea.style.display = 'none';
                     updateAuthUI();
@@ -228,63 +217,15 @@
             }
 
             // run on load
+            updateAuthUI();
             refreshAuthState();
 
             // Ensure Home section is visible on first open (if no hash)
             if (!location.hash) {
                 const homeEl = document.getElementById('home');
-                if (homeEl) {
-                    setTimeout(() => homeEl.scrollIntoView({ behavior: 'smooth' }), 50);
-                }
+                if (homeEl) setTimeout(() => homeEl.scrollIntoView({ behavior: 'smooth' }), 50);
             }
         </script>
-                    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
-                    sideMenu.style.display = 'none';
-                });
-            }
-
-            authForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = document.getElementById('name').value.trim();
-                const serial = document.getElementById('serial').value.trim();
-                const hospital = document.getElementById('hospital').value.trim();
-                const password = document.getElementById('password').value;
-                if (!name || !serial || !hospital || !password) {
-                    authError.textContent = 'Please fill all fields.';
-                    authError.style.display = '';
-                    return;
-                }
-
-                const users = JSON.parse(localStorage.getItem('lmsUsers') || '{}');
-                if (isSignup.checked) {
-                    if (users[serial]) {
-                        authError.textContent = 'An account with this serial already exists.';
-                        authError.style.display = '';
-                        return;
-                    }
-                    users[serial] = { name, serial, hospital, password };
-                    localStorage.setItem('lmsUsers', JSON.stringify(users));
-                    localStorage.setItem('lmsUser', JSON.stringify({ name, serial, hospital }));
-                    authModal.hide();
-                    updateAuthUI();
-                    refreshAuthState();
-                    return;
-                }
-
-                // login
-                if (!users[serial] || users[serial].password !== password) {
-                    authError.textContent = 'Invalid serial or password.';
-                    authError.style.display = '';
-                    return;
-                }
-                localStorage.setItem('lmsUser', JSON.stringify({ name: users[serial].name, serial, hospital: users[serial].hospital }));
-                authModal.hide();
-                updateAuthUI();
-                refreshAuthState();
-            });
-                        // initialize UI on load
-                        updateAuthUI();
-                        refreshAuthState();
-        </script>
+    </div>
 </body>
 </html>
