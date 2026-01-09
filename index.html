@@ -147,8 +147,16 @@
             function updateAuthUI() {
                 const token = localStorage.getItem('lmsToken');
                 const name = localStorage.getItem('lmsName');
+                const localUser = localStorage.getItem('lmsUser');
                 if (token && name) {
                     authBtn.textContent = name + ' (Logout)';
+                } else if (localUser) {
+                    try {
+                        const u = JSON.parse(localUser);
+                        authBtn.textContent = (u.name || 'User') + ' (Logout)';
+                    } catch (e) {
+                        authBtn.textContent = 'Logout';
+                    }
                 } else {
                     authBtn.textContent = 'Login / Sign up';
                 }
@@ -171,14 +179,23 @@
             const lmsArea = document.getElementById('lmsArea');
             async function refreshAuthState() {
                 const token = localStorage.getItem('lmsToken');
+                const localUser = localStorage.getItem('lmsUser');
+                // If no server token but a local client user exists, show LMS sections
                 if (!token) {
+                    if (localUser) {
+                        if (lmsArea) lmsArea.style.display = '';
+                        document.querySelectorAll('.auth-only').forEach(el => el.style.display = '');
+                        document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
+                        updateAuthUI();
+                        return;
+                    }
                     if (lmsArea) lmsArea.style.display = 'none';
                     updateAuthUI();
                     return;
                 }
+                // token exists: show LMS and fetch per-user progress
                 if (lmsArea) lmsArea.style.display = '';
                 try {
-                    // Default API_BASE to deployed backend on Render; can be overridden in localStorage
                     const API_BASE = localStorage.getItem('API_BASE') || 'https://claronav-lms.onrender.com';
                     const resp = await fetch(API_BASE + '/api/progress?token=' + encodeURIComponent(token));
                     const j = await resp.json();
@@ -203,6 +220,7 @@
                     document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
                     updateAuthUI();
                 } catch (err) {
+                    // invalid token: clear and hide
                     localStorage.removeItem('lmsToken');
                     if (lmsArea) lmsArea.style.display = 'none';
                     updateAuthUI();
@@ -249,6 +267,7 @@
                     localStorage.setItem('lmsUser', JSON.stringify({ name, serial, hospital }));
                     authModal.hide();
                     updateAuthUI();
+                    refreshAuthState();
                     return;
                 }
 
@@ -261,61 +280,11 @@
                 localStorage.setItem('lmsUser', JSON.stringify({ name: users[serial].name, serial, hospital: users[serial].hospital }));
                 authModal.hide();
                 updateAuthUI();
+                refreshAuthState();
             });
-
                         // initialize UI on load
                         updateAuthUI();
-
-                        // Show or hide LMS area depending on backend login token
-                        const lmsArea = document.getElementById('lmsArea');
-                        async function refreshAuthState() {
-                            const token = localStorage.getItem('lmsToken');
-                            if (!token) {
-                                if (lmsArea) lmsArea.style.display = 'none';
-                                return;
-                            }
-                            // token exists: show LMS and fetch per-user progress
-                            if (lmsArea) lmsArea.style.display = '';
-                            try {
-                                const resp = await fetch('/api/progress?token=' + encodeURIComponent(token));
-                                const j = await resp.json();
-                                if (!resp.ok) throw new Error(j.error || 'Failed to fetch progress');
-                                const p = j.progress || {};
-                                // update progress bars if available
-                                if (p.cranial && document.getElementById('cranialProgressBar')) {
-                                    const el = document.getElementById('cranialProgressBar');
-                                    el.style.width = (p.cranial * 1) + '%'; el.setAttribute('aria-valuenow', p.cranial);
-                                    el.textContent = (p.cranial * 1) + '%';
-                                }
-                                if (p.spine && document.getElementById('spineProgressBar')) {
-                                    const el = document.getElementById('spineProgressBar');
-                                    el.style.width = (p.spine * 1) + '%'; el.setAttribute('aria-valuenow', p.spine);
-                                    el.textContent = (p.spine * 1) + '%';
-                                }
-                                if (p.ent && document.getElementById('entProgressBar')) {
-                                    const el = document.getElementById('entProgressBar');
-                                    el.style.width = (p.ent * 1) + '%'; el.setAttribute('aria-valuenow', p.ent);
-                                    el.textContent = (p.ent * 1) + '%';
-                                }
-                                document.querySelectorAll('.auth-only').forEach(el => el.style.display = '');
-                                document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
-                            } catch (err) {
-                                // invalid token: clear and hide
-                                localStorage.removeItem('lmsToken');
-                                if (lmsArea) lmsArea.style.display = 'none';
-                            }
-                        }
-
-                        // run on load
                         refreshAuthState();
-
-                        // Ensure Home section is visible on first open (if no hash)
-                        if (!location.hash) {
-                                const homeEl = document.getElementById('home');
-                                if (homeEl) {
-                                        setTimeout(() => homeEl.scrollIntoView({ behavior: 'smooth' }), 50);
-                                }
-                        }
         </script>
 </body>
 </html>
