@@ -60,7 +60,8 @@
       const password = document.getElementById('password').value;
       const errorEl = document.getElementById('error');
       try {
-        const API_BASE = localStorage.getItem('API_BASE') || '';
+        // Default API_BASE to deployed backend on Render; can be overridden in localStorage
+        const API_BASE = localStorage.getItem('API_BASE') || 'https://claronav-lms.onrender.com';
         const res = await fetch(API_BASE + '/api/signup', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, firstName, lastName, serial, hospital, password })

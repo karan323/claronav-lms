@@ -39,7 +39,8 @@
       const password = document.getElementById('password').value;
       const errorEl = document.getElementById('error');
       try {
-        const API_BASE = localStorage.getItem('API_BASE') || '';
+        // Default API_BASE to deployed backend on Render; can be overridden in localStorage
+        const API_BASE = localStorage.getItem('API_BASE') || 'https://claronav-lms.onrender.com';
         const res = await fetch(API_BASE + '/api/login', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -63,6 +64,8 @@
         errorEl.textContent = msg; errorEl.style.display = '';
       }
     });
+    localStorage.setItem('API_BASE','https://my-backend.onrender.com')
+    location.reload()
   </script>
 </body>
 </html>
