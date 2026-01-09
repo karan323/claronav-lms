@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern LMS - Learning Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 0;
+            color: #495057;
+            font-weight: 500;
+            font-size: 1.2rem;
+        }
+        .nav-tabs .nav-link i {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #667eea;
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .module-list {
+            list-style: none;
+            padding: 0;
+        }
+        .module-list li {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 1.2rem;
+        }
+        .module-list li:last-child {
+            border-bottom: none;
+        }
+        .module-list i {
+            margin-right: 0.5rem;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <img src="logo.png" alt="Claronav Kolahi Inc. Logo" class="me-3" style="max-height: 120px;">
+                <div>
+                    <h1 class="mb-0">Claronav Kolahi Inc.</h1>
+                    <p class="lead mb-0">Training Material Neuronavigation</p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-2">
+                    <button id="authBtn" class="btn btn-light">Login / Sign up</button>
+                </div>
+                <button id="menuToggle" class="btn btn-outline-light" aria-label="menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+                <div id="sideMenu" style="display:none; position:absolute; z-index:2000;">
+            <div class="card" style="width:200px;">
+                <div class="list-group list-group-flush">
+                                        <a href="#home" id="menuHome" class="list-group-item list-group-item-action">Home</a>
+                    <a href="#about" class="list-group-item list-group-item-action">About</a>
+                    <a href="#support" class="list-group-item list-group-item-action">Support</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+        <!-- Home Section -->
+        <section id="home" class="py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h2>About Claronav</h2>
+                        <p class="lead">Navient is an innovative image-guided navigation system, utilizing the latest technologies in the field and bringing simplicity, accuracy and affordability to the surgical navigation system. Navient offers a truly portable cart along with powerful and intuitive software. Its instruments are steam sterilizable, and there is no disposable cost per procedure.</p>
+                        <p>Navient is offered in two configurations, Navient and Navient ENT. Learn more at <a href="https://medical.claronav.com/" target="_blank">medical.claronav.com</a>.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-3">
+                            <h5>Contact</h5>
+                            <p class="mb-1"><strong>Email:</strong> <a href="mailto:info@claronav.com">info@claronav.com</a></p>
+                            <p class="mb-1"><strong>Phone:</strong> +1 (647) 951-1525</p>
+                            <p class="mb-1"><strong>Toll Free:</strong> +1 (844) 628-4336</p>
+                            <p class="mb-0"><strong>Address:</strong><br>1140 Sheppard Ave W Unit 10<br>Toronto, Ontario, Canada M3K 2A2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <div class="container mt-5" id="lmsArea">
+        <script>
+            // Position and menu handlers
+            const menuToggle = document.getElementById('menuToggle');
+            const sideMenu = document.getElementById('sideMenu');
+
+            menuToggle.addEventListener('click', () => {
+                const rect = menuToggle.getBoundingClientRect();
+                const top = rect.bottom + window.scrollY + 6;
+                const centerX = rect.left + window.scrollX + rect.width / 2;
+                sideMenu.style.top = top + 'px';
+                sideMenu.style.left = centerX + 'px';
+                sideMenu.style.transform = 'translateX(-50%)';
+                sideMenu.style.display = sideMenu.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', (e) => {
+                const target = e.target;
+                if (!sideMenu.contains(target) && !menuToggle.contains(target)) {
+                    sideMenu.style.display = 'none';
+                }
+            });
+
+            const menuHome = document.getElementById('menuHome');
+            if (menuHome) {
+                menuHome.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+                    sideMenu.style.display = 'none';
+                });
+            }
+
+            // Auth UI handlers
+            const authBtn = document.getElementById('authBtn');
+            function updateAuthUI() {
+                const token = localStorage.getItem('lmsToken');
+                const name = localStorage.getItem('lmsName');
+                if (token && name) {
+                    authBtn.textContent = name + ' (Logout)';
+                } else {
+                    authBtn.textContent = 'Login / Sign up';
+                }
+            }
+
+            authBtn.addEventListener('click', () => {
+                const token = localStorage.getItem('lmsToken');
+                if (token) {
+                    localStorage.removeItem('lmsToken');
+                    localStorage.removeItem('lmsName');
+                    updateAuthUI();
+                    refreshAuthState();
+                } else {
+                    // use relative path so GitHub Pages resolves correctly
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // Show or hide LMS area depending on backend login token
+            const lmsArea = document.getElementById('lmsArea');
+            async function refreshAuthState() {
+                const token = localStorage.getItem('lmsToken');
+                if (!token) {
+                    if (lmsArea) lmsArea.style.display = 'none';
+                    updateAuthUI();
+                    return;
+                }
+                if (lmsArea) lmsArea.style.display = '';
+                try {
+                    // Default API_BASE to deployed backend on Render; can be overridden in localStorage
+                    const API_BASE = localStorage.getItem('API_BASE') || 'https://claronav-lms.onrender.com';
+                    const resp = await fetch(API_BASE + '/api/progress?token=' + encodeURIComponent(token));
+                    const j = await resp.json();
+                    if (!resp.ok) throw new Error(j.error || 'Failed to fetch progress');
+                    const p = j.progress || {};
+                    if (p.cranial && document.getElementById('cranialProgressBar')) {
+                        const el = document.getElementById('cranialProgressBar');
+                        el.style.width = (p.cranial * 1) + '%'; el.setAttribute('aria-valuenow', p.cranial);
+                        el.textContent = (p.cranial * 1) + '%';
+                    }
+                    if (p.spine && document.getElementById('spineProgressBar')) {
+                        const el = document.getElementById('spineProgressBar');
+                        el.style.width = (p.spine * 1) + '%'; el.setAttribute('aria-valuenow', p.spine);
+                        el.textContent = (p.spine * 1) + '%';
+                    }
+                    if (p.ent && document.getElementById('entProgressBar')) {
+                        const el = document.getElementById('entProgressBar');
+                        el.style.width = (p.ent * 1) + '%'; el.setAttribute('aria-valuenow', p.ent);
+                        el.textContent = (p.ent * 1) + '%';
+                    }
+                    document.querySelectorAll('.auth-only').forEach(el => el.style.display = '');
+                    document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
+                    updateAuthUI();
+                } catch (err) {
+                    localStorage.removeItem('lmsToken');
+                    if (lmsArea) lmsArea.style.display = 'none';
+                    updateAuthUI();
+                }
+            }
+
+            // run on load
+            refreshAuthState();
+
+            // Ensure Home section is visible on first open (if no hash)
+            if (!location.hash) {
+                const homeEl = document.getElementById('home');
+                if (homeEl) {
+                    setTimeout(() => homeEl.scrollIntoView({ behavior: 'smooth' }), 50);
+                }
+            }
+        </script>
+                    document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+                    sideMenu.style.display = 'none';
+                });
+            }
+
+            authForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const serial = document.getElementById('serial').value.trim();
+                const hospital = document.getElementById('hospital').value.trim();
+                const password = document.getElementById('password').value;
+                if (!name || !serial || !hospital || !password) {
+                    authError.textContent = 'Please fill all fields.';
+                    authError.style.display = '';
+                    return;
+                }
+
+                const users = JSON.parse(localStorage.getItem('lmsUsers') || '{}');
+                if (isSignup.checked) {
+                    if (users[serial]) {
+                        authError.textContent = 'An account with this serial already exists.';
+                        authError.style.display = '';
+                        return;
+                    }
+                    users[serial] = { name, serial, hospital, password };
+                    localStorage.setItem('lmsUsers', JSON.stringify(users));
+                    localStorage.setItem('lmsUser', JSON.stringify({ name, serial, hospital }));
+                    authModal.hide();
+                    updateAuthUI();
+                    return;
+                }
+
+                // login
+                if (!users[serial] || users[serial].password !== password) {
+                    authError.textContent = 'Invalid serial or password.';
+                    authError.style.display = '';
+                    return;
+                }
+                localStorage.setItem('lmsUser', JSON.stringify({ name: users[serial].name, serial, hospital: users[serial].hospital }));
+                authModal.hide();
+                updateAuthUI();
+            });
+
+                        // initialize UI on load
+                        updateAuthUI();
+
+                        // Show or hide LMS area depending on backend login token
+                        const lmsArea = document.getElementById('lmsArea');
+                        async function refreshAuthState() {
+                            const token = localStorage.getItem('lmsToken');
+                            if (!token) {
+                                if (lmsArea) lmsArea.style.display = 'none';
+                                return;
+                            }
+                            // token exists: show LMS and fetch per-user progress
+                            if (lmsArea) lmsArea.style.display = '';
+                            try {
+                                const resp = await fetch('/api/progress?token=' + encodeURIComponent(token));
+                                const j = await resp.json();
+                                if (!resp.ok) throw new Error(j.error || 'Failed to fetch progress');
+                                const p = j.progress || {};
+                                // update progress bars if available
+                                if (p.cranial && document.getElementById('cranialProgressBar')) {
+                                    const el = document.getElementById('cranialProgressBar');
+                                    el.style.width = (p.cranial * 1) + '%'; el.setAttribute('aria-valuenow', p.cranial);
+                                    el.textContent = (p.cranial * 1) + '%';
+                                }
+                                if (p.spine && document.getElementById('spineProgressBar')) {
+                                    const el = document.getElementById('spineProgressBar');
+                                    el.style.width = (p.spine * 1) + '%'; el.setAttribute('aria-valuenow', p.spine);
+                                    el.textContent = (p.spine * 1) + '%';
+                                }
+                                if (p.ent && document.getElementById('entProgressBar')) {
+                                    const el = document.getElementById('entProgressBar');
+                                    el.style.width = (p.ent * 1) + '%'; el.setAttribute('aria-valuenow', p.ent);
+                                    el.textContent = (p.ent * 1) + '%';
+                                }
+                                document.querySelectorAll('.auth-only').forEach(el => el.style.display = '');
+                                document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
+                            } catch (err) {
+                                // invalid token: clear and hide
+                                localStorage.removeItem('lmsToken');
+                                if (lmsArea) lmsArea.style.display = 'none';
+                            }
+                        }
+
+                        // run on load
+                        refreshAuthState();
+
+                        // Ensure Home section is visible on first open (if no hash)
+                        if (!location.hash) {
+                                const homeEl = document.getElementById('home');
+                                if (homeEl) {
+                                        setTimeout(() => homeEl.scrollIntoView({ behavior: 'smooth' }), 50);
+                                }
+                        }
+        </script>
+</body>
+</html>
