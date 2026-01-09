@@ -32,6 +32,7 @@
             background-color: #667eea;
             color: white;
         }
+            .nav-tabs .nav-link img.logo { object-fit: contain; }
         .card {
             border: none;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -56,6 +57,7 @@
             margin-right: 0.5rem;
             color: #667eea;
         }
+        .nav-tabs .nav-link img.logo { height:24px; width:24px; object-fit:contain; margin-right:8px; vertical-align:middle; }
         /* Auth visibility helpers: default hidden until logged-in */
         .auth-only { display: none !important; }
         .not-auth { display: block; }
@@ -135,13 +137,19 @@
         <div class="auth-only" style="display:none">
             <ul class="nav nav-tabs" id="lmsTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="cranial-tab" data-bs-toggle="tab" data-bs-target="#cranial" type="button" role="tab">Cranial Navigation</button>
+                    <button class="nav-link active" id="cranial-tab" data-bs-toggle="tab" data-bs-target="#cranial" type="button" role="tab">
+                        <img src="cranial-logo.svg" alt="Cranial" class="logo">Cranial Navigation
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="spine-tab" data-bs-toggle="tab" data-bs-target="#spine" type="button" role="tab">Spine Navigation</button>
+                    <button class="nav-link" id="spine-tab" data-bs-toggle="tab" data-bs-target="#spine" type="button" role="tab">
+                        <img src="spine-logo.svg" alt="Spine" class="logo">Spine Navigation
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="ent-tab" data-bs-toggle="tab" data-bs-target="#ent" type="button" role="tab">ENT Navigation</button>
+                    <button class="nav-link" id="ent-tab" data-bs-toggle="tab" data-bs-target="#ent" type="button" role="tab">
+                        <img src="ent-logo.svg" alt="ENT" class="logo">ENT Navigation
+                    </button>
                 </li>
             </ul>
             <div class="tab-content mt-3">
