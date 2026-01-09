@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="8" fill="#2f855a" />
-  <path d="M20 20c6 6 8 24 24 24" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" />
-  <text x="32" y="48" font-family="Segoe UI,Arial,Helvetica,sans-serif" font-size="18" fill="#fff" font-weight="700" text-anchor="middle">S</text>
-</svg>
