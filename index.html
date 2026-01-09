@@ -56,9 +56,23 @@
             margin-right: 0.5rem;
             color: #667eea;
         }
+        /* Auth visibility helpers: default hidden until logged-in */
+        .auth-only { display: none !important; }
+        .not-auth { display: block; }
+        .lms-logged-in .auth-only { display: block !important; }
+        .lms-logged-in .not-auth { display: none !important; }
     </style>
 </head>
 <body>
+    <script>
+        // Early toggle to avoid flash of non-auth content when logged in
+        try {
+            const hasToken = !!localStorage.getItem('lmsToken');
+            const hasLocal = !!localStorage.getItem('lmsUser');
+            if (hasToken || hasLocal) document.documentElement.classList.add('lms-logged-in');
+            else document.documentElement.classList.remove('lms-logged-in');
+        } catch (e) { /* ignore */ }
+    </script>
     <header class="header">
         <div class="container d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
