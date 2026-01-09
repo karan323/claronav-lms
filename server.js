@@ -166,6 +166,18 @@ app.get('/api/admin/modules/content', (req, res) => {
   res.json({ success: true, content });
 });
 
+// Public: Get module content (no admin token required)
+app.get('/api/modules/content', (req, res) => {
+  const module = req.query.module;
+  const data = readData();
+  const content = data.moduleContent || { cranial: [], spine: [], ent: [] };
+
+  if (module) {
+    return res.json({ success: true, content: content[module] || [] });
+  }
+  return res.json({ success: true, content });
+});
+
 // Upload module content
 app.post('/api/admin/modules/upload', upload.single('file'), (req, res) => {
   const { module, type, title, token } = req.body;
