@@ -111,6 +111,101 @@
         </section>
 
     <div class="container mt-5" id="lmsArea">
+        <!-- LMS UI: visible only when authenticated (server token or local user) -->
+        <div class="row mb-4 not-auth">
+            <div class="col-12">
+                <div class="alert alert-info">Please <a href="login.html">login</a> or <a href="signup.html">sign up</a> to view the training modules.</div>
+            </div>
+        </div>
+
+        <div class="auth-only" style="display:none">
+            <ul class="nav nav-tabs" id="lmsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="cranial-tab" data-bs-toggle="tab" data-bs-target="#cranial" type="button" role="tab">Cranial Navigation</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="spine-tab" data-bs-toggle="tab" data-bs-target="#spine" type="button" role="tab">Spine Navigation</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="ent-tab" data-bs-toggle="tab" data-bs-target="#ent" type="button" role="tab">ENT Navigation</button>
+                </li>
+            </ul>
+            <div class="tab-content mt-3">
+                <div class="tab-pane fade show active" id="cranial" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Cranial Modules</h5>
+                                    <ul class="module-list">
+                                        <li><i class="fas fa-play-circle"></i> Introduction to Cranial Navigation</li>
+                                        <li><i class="fas fa-video"></i> Workflow & Instrumentation</li>
+                                        <li><i class="fas fa-check-circle"></i> Case Studies</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-3">
+                                <h6>Progress</h6>
+                                <div class="progress" style="height:20px;">
+                                    <div id="cranialProgressBar" class="progress-bar" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="spine" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Spine Modules</h5>
+                                    <ul class="module-list">
+                                        <li><i class="fas fa-play-circle"></i> Introduction to Spine Navigation</li>
+                                        <li><i class="fas fa-video"></i> Planning & Execution</li>
+                                        <li><i class="fas fa-check-circle"></i> Advanced Tips</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-3">
+                                <h6>Progress</h6>
+                                <div class="progress" style="height:20px;">
+                                    <div id="spineProgressBar" class="progress-bar" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="ent" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">ENT Modules</h5>
+                                    <ul class="module-list">
+                                        <li><i class="fas fa-play-circle"></i> Introduction to ENT Navigation</li>
+                                        <li><i class="fas fa-video"></i> ENT Workflows</li>
+                                        <li><i class="fas fa-check-circle"></i> Practical Exercises</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-3">
+                                <h6>Progress</h6>
+                                <div class="progress" style="height:20px;">
+                                    <div id="entProgressBar" class="progress-bar" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             // Position and menu handlers
             const menuToggle = document.getElementById('menuToggle');
