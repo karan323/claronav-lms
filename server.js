@@ -46,6 +46,11 @@ app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf && buf.toS
 // Serve static files (front-end)
 app.use(express.static(path.join(__dirname)));
 
+// Serve home.html at root path
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'home.html'));
+});
+
 app.post('/api/signup', (req, res) => {
   // debug log to help diagnose malformed requests
   if (req.rawBody) console.log('RAW SIGNUP BODY:', req.rawBody);

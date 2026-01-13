@@ -814,6 +814,26 @@
                 }
             });
         });
+
+        // Smart training link handler
+        function handleTrainingLink(e) {
+            e.preventDefault();
+            const hasToken = !!localStorage.getItem('lmsToken');
+            const hasLocal = !!localStorage.getItem('lmsUser');
+            
+            if (hasToken || hasLocal) {
+                // User is logged in - go directly to training
+                window.location.href = 'index.html';
+            } else {
+                // User not logged in - go to login
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Attach training link handler to all training links
+        document.querySelectorAll('a[href="login.html"]').forEach(link => {
+            link.addEventListener('click', handleTrainingLink);
+        });
     </script>
 </body>
 </html>
