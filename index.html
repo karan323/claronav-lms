@@ -287,6 +287,11 @@
             object-fit: contain;
         }
 
+        /* Slightly enlarge ENT logo without affecting others */
+        .ent-logo-icon img {
+            transform: scale(1.18);
+        }
+
         .card-title {
             font-size: 1.5rem;
             font-weight: 600;
@@ -592,7 +597,7 @@
                 </div>
 
                 <div class="modern-card" data-module="ent">
-                    <div class="card-icon">
+                    <div class="card-icon ent-logo-icon">
                         <img src="ent-logo.png" alt="ENT Navigation">
                     </div>
                     <h3 class="card-title">ENT Navigation</h3>
