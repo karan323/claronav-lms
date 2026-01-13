@@ -9,15 +9,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --dark-bg: #0f0f23;
+            --primary-blue: #0066CC;
+            --dark-blue: #003D7A;
+            --light-blue: #E6F2FF;
+            --accent-teal: #00A8B5;
+            --primary-gradient: linear-gradient(135deg, #0066CC 0%, #003D7A 100%);
+            --secondary-gradient: linear-gradient(135deg, #00A8B5 0%, #0066CC 100%);
+            --accent-gradient: linear-gradient(135deg, #0066CC 0%, #00A8B5 100%);
+            --dark-bg: #FFFFFF;
             --card-bg: rgba(255, 255, 255, 0.95);
             --text-primary: #2d3748;
             --text-secondary: #718096;
-            --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.15);
+            --shadow: 0 20px 40px rgba(0, 102, 204, 0.1);
+            --shadow-hover: 0 30px 60px rgba(0, 102, 204, 0.15);
         }
 
         * {
@@ -41,7 +45,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background: linear-gradient(-45deg, #0066CC, #003D7A, #00A8B5, #E6F2FF);
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
         }
@@ -521,72 +525,20 @@
                     <div class="hero-content">
                         <h1 class="hero-title">Welcome to Advanced Navigation Training</h1>
                         <p class="hero-subtitle">Master the latest techniques in surgical navigation with our comprehensive, interactive learning platform designed for medical professionals.</p>
-                        <div class="hero-stats">
-                            <div class="stat-item">
-                                <span class="stat-number" data-target="1500">0</span>
-                                <div class="stat-label">Surgeons Trained</div>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" data-target="98">0</span>
-                                <div class="stat-label">Success Rate</div>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" data-target="24">0</span>
-                                <div class="stat-label">Training Modules</div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="hero-slide" id="slide2">
                     <div class="hero-content">
                         <h1 class="hero-title">Precision Meets Innovation</h1>
                         <p class="hero-subtitle">Experience cutting-edge navigation technology with hands-on training modules covering cranial, spine, and ENT procedures.</p>
-                        <div class="hero-stats">
-                            <div class="stat-item">
-                                <span class="stat-number" data-target="500">0</span>
-                                <div class="stat-label">Procedures</div>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" data-target="99">0</span>
-                                <div class="stat-label">Accuracy Rate</div>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" data-target="12">0</span>
-                                <div class="stat-label">Countries</div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="hero-slide" id="slide3">
                     <div class="hero-content">
                         <h1 class="hero-title">Your Journey Starts Here</h1>
                         <p class="hero-subtitle">Join thousands of medical professionals who trust Claronav for their surgical navigation training and certification.</p>
-                        <div class="hero-stats">
-                            <div class="stat-item">
-                                <span class="stat-number" data-target="300">0</span>
-                                <div class="stat-label">Certifications</div>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" data-target="95">0</span>
-                                <div class="stat-label">Satisfaction</div>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" data-target="7">0</span>
-                                <div class="stat-label">Years Experience</div>
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Carousel Controls -->
-            <div class="text-center mt-4">
-                <button class="btn btn-outline-light me-2" id="prevSlide">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="btn btn-outline-light ms-2" id="nextSlide">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
             </div>
         </div>
     </section>
