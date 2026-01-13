@@ -5,44 +5,173 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Sign up - Claronav LMS</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #0066CC;
+      --dark-blue: #003D7A;
+      --light-blue: #E6F2FF;
+      --accent-teal: #00A8B5;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 2rem 0;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="1200" height="600" fill="url(%23grid)" /></svg>');
+      opacity: 0.5;
+    }
+    .signup-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 3rem;
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+    }
+    .logo-section {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .logo-section img {
+      height: 60px;
+      margin-bottom: 1rem;
+    }
+    .logo-section h2 {
+      color: var(--dark-blue);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .logo-section p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+    .form-label {
+      color: var(--dark-blue);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .form-control {
+      border: 2px solid #E0E0E0;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+    }
+    .form-control:focus {
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.15);
+    }
+    .btn-signup {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 10px;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+    .btn-signup:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 102, 204, 0.3);
+      color: white;
+    }
+    .login-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #666;
+    }
+    .login-link a {
+      color: var(--primary-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .login-link a:hover {
+      color: var(--accent-teal);
+    }
+    .error-message {
+      background: #FEE;
+      color: #C33;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #C33;
+    }
+    .home-link {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+    .home-link:hover {
+      color: var(--accent-teal);
+    }
+  </style>
 </head>
-<body class="bg-light">
-  <div class="container py-5">
+<body>
+  <a href="home.html" class="home-link"><i class="fas fa-arrow-left me-2"></i>Back to Home</a>
+  <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card p-4">
-          <h3 class="mb-3">Create Account</h3>
+      <div class="col-md-12">
+        <div class="signup-card mx-auto">
+          <div class="logo-section">
+            <img src="logo.png" alt="Claronav Logo">
+            <h2>Create Account</h2>
+            <p>Join the Navient training platform</p>
+          </div>
           <form id="signupForm">
             <div class="row mb-3">
               <div class="col-md-6">
-                <label class="form-label">First Name</label>
-                <input id="firstName" class="form-control" required>
+                <label class="form-label"><i class="fas fa-user me-2"></i>First Name</label>
+                <input id="firstName" class="form-control" placeholder="Enter first name" required>
               </div>
               <div class="col-md-6">
-                <label class="form-label">Last Name</label>
-                <input id="lastName" class="form-control" required>
+                <label class="form-label"><i class="fas fa-user me-2"></i>Last Name</label>
+                <input id="lastName" class="form-control" placeholder="Enter last name" required>
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input id="email" type="email" class="form-control" required>
+              <label class="form-label"><i class="fas fa-envelope me-2"></i>Email Address</label>
+              <input id="email" type="email" class="form-control" placeholder="Enter your email" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">System Serial Number</label>
-              <input id="serial" class="form-control" required>
+              <label class="form-label"><i class="fas fa-barcode me-2"></i>System Serial Number</label>
+              <input id="serial" class="form-control" placeholder="Enter system serial number" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Hospital Name</label>
-              <input id="hospital" class="form-control" required>
+              <label class="form-label"><i class="fas fa-hospital me-2"></i>Hospital Name</label>
+              <input id="hospital" class="form-control" placeholder="Enter hospital name" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Password</label>
-              <input id="password" type="password" class="form-control" required>
+              <label class="form-label"><i class="fas fa-lock me-2"></i>Password</label>
+              <input id="password" type="password" class="form-control" placeholder="Create a password" required>
             </div>
-            <div class="mb-3 text-danger" id="error" style="display:none"></div>
-            <div class="d-flex justify-content-between align-items-center">
-              <button class="btn btn-primary" type="submit">Sign up</button>
-              <a href="login.html">Already have an account?</a>
+            <div id="error" style="display:none" class="error-message"></div>
+            <button class="btn btn-signup" type="submit">
+              <i class="fas fa-user-plus me-2"></i>Create Account
+            </button>
+            <div class="login-link">
+              Already have an account? <a href="login.html">Sign In</a>
             </div>
           </form>
         </div>
