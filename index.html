@@ -232,7 +232,7 @@
         }
 
         .modern-card {
-            background: var(--card-bg);
+            background: var(--light-blue);
             border-radius: 20px;
             padding: 2rem;
             box-shadow: var(--shadow);
@@ -270,16 +270,21 @@
         }
 
         .card-icon {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
             margin-bottom: 1rem;
-            background: var(--primary-gradient);
-            color: white;
+            background: var(--primary-blue);
+            padding: 0.8rem;
+        }
+
+        .card-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .card-title {
@@ -560,7 +565,7 @@
             <div class="card-grid">
                 <div class="modern-card" data-module="cranial">
                     <div class="card-icon">
-                        <i class="fas fa-head-side-brain"></i>
+                        <img src="cranial-logo.png" alt="Cranial Navigation">
                     </div>
                     <h3 class="card-title">Cranial Navigation</h3>
                     <p class="card-description">Master cranial procedures with advanced navigation techniques, from basic introductions to complex case studies.</p>
@@ -574,7 +579,7 @@
 
                 <div class="modern-card" data-module="spine">
                     <div class="card-icon">
-                        <i class="fas fa-spine"></i>
+                        <img src="spine-logo.png" alt="Spine Navigation">
                     </div>
                     <h3 class="card-title">Spine Navigation</h3>
                     <p class="card-description">Learn precise spine navigation techniques, including planning, execution, and advanced surgical tips.</p>
@@ -588,7 +593,7 @@
 
                 <div class="modern-card" data-module="ent">
                     <div class="card-icon">
-                        <i class="fas fa-head-side-virus"></i>
+                        <img src="ent-logo.png" alt="ENT Navigation">
                     </div>
                     <h3 class="card-title">ENT Navigation</h3>
                     <p class="card-description">Specialized ENT navigation training covering unique workflows and practical exercises for ear procedures.</p>
