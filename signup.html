@@ -129,7 +129,7 @@
   </style>
 </head>
 <body>
-  <a href="home.html" class="home-link"><i class="fas fa-arrow-left me-2"></i>Back to Home</a>
+  <a href="index.html" class="home-link"><i class="fas fa-arrow-left me-2"></i>Back to Home</a>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-12">
@@ -209,7 +209,7 @@
         localStorage.setItem('lmsToken', j.token);
         localStorage.setItem('lmsName', j.name);
         // use relative path to work on GitHub Pages
-        window.location.href = 'index.html#home';
+        window.location.href = 'dashboard.html#home';
       } catch (err) {
         // If error contains HTML, strip tags for display
         let msg = err.message || 'Signup failed';

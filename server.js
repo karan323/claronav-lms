@@ -46,9 +46,9 @@ app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf && buf.toS
 // Serve static files (front-end)
 app.use(express.static(path.join(__dirname)));
 
-// Serve home.html at root path
+// Serve index.html at root path
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'home.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.post('/api/signup', (req, res) => {

@@ -3,25 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claronav LMS - Advanced Training Platform</title>
+    <title>Navient - Advanced Surgical Navigation System | Claronav</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-blue: #0066CC;
             --dark-blue: #003D7A;
             --light-blue: #E6F2FF;
             --accent-teal: #00A8B5;
-            --primary-gradient: linear-gradient(135deg, #0066CC 0%, #003D7A 100%);
-            --secondary-gradient: linear-gradient(135deg, #00A8B5 0%, #0066CC 100%);
-            --accent-gradient: linear-gradient(135deg, #0066CC 0%, #00A8B5 100%);
-            --dark-bg: #FFFFFF;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-primary: #2d3748;
-            --text-secondary: #718096;
-            --shadow: 0 20px 40px rgba(0, 102, 204, 0.1);
-            --shadow-hover: 0 30px 60px rgba(0, 102, 204, 0.15);
+            --white: #FFFFFF;
+            --light-gray: #F5F7FA;
+            --dark-gray: #2D3E50;
+            --text-gray: #555555;
         }
 
         * {
@@ -32,428 +27,491 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
-            overflow-x: hidden;
+            color: var(--text-gray);
+            line-height: 1.6;
         }
 
-        /* Animated Background */
-        .animated-bg {
+        /* Header Navigation */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            box-shadow: 0 2px 10px rgba(0, 102, 204, 0.1);
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(-45deg, #0066CC, #003D7A, #00A8B5, #E6F2FF);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Floating Particles */
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .particle:nth-child(1) { width: 4px; height: 4px; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 6px; height: 6px; left: 20%; animation-delay: 1s; }
-        .particle:nth-child(3) { width: 3px; height: 3px; left: 30%; animation-delay: 2s; }
-        .particle:nth-child(4) { width: 5px; height: 5px; left: 40%; animation-delay: 3s; }
-        .particle:nth-child(5) { width: 4px; height: 4px; left: 50%; animation-delay: 4s; }
-        .particle:nth-child(6) { width: 6px; height: 6px; left: 60%; animation-delay: 5s; }
-        .particle:nth-child(7) { width: 3px; height: 3px; left: 70%; animation-delay: 6s; }
-        .particle:nth-child(8) { width: 5px; height: 5px; left: 80%; animation-delay: 7s; }
-        .particle:nth-child(9) { width: 4px; height: 4px; left: 90%; animation-delay: 8s; }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.5; }
-            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
-        }
-
-        /* Header */
-        .modern-header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1rem 0;
-            position: fixed;
             top: 0;
-            width: 100%;
             z-index: 1000;
+        }
+
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .navbar-custom .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-custom .nav-link:hover {
+            color: var(--accent-teal) !important;
+        }
+
+        .btn-nav {
+            background-color: var(--accent-teal);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
 
-        .modern-header.scrolled {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: var(--shadow);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .logo-container img {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .brand-text h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .btn-nav:hover {
+            background-color: #008A96;
             color: white;
-            margin: 0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 168, 181, 0.3);
         }
 
-        .brand-text p {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 0;
-        }
-
-        .modern-header.scrolled .brand-text h1,
-        .modern-header.scrolled .brand-text p {
-            color: var(--text-primary);
-        }
-
-        /* Hero Section */
+        /* Hero Section with Video */
         .hero-section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            padding-top: 100px;
-        }
-
-        .hero-carousel {
-            width: 100%;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: white;
+            padding: 120px 0 60px;
             position: relative;
             overflow: hidden;
+            margin-top: 60px;
         }
 
-        .hero-slide {
-            display: none;
-            animation: slideIn 1s ease-out;
-        }
-
-        .hero-slide.active {
-            display: block;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="1200" height="600" fill="url(%23grid)" /></svg>');
+            opacity: 0.5;
         }
 
         .hero-content {
-            text-align: center;
-            color: white;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
+            position: relative;
+            z-index: 2;
         }
 
         .hero-title {
             font-size: 3.5rem;
             font-weight: 700;
+            font-family: 'Poppins', sans-serif;
             margin-bottom: 1rem;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: textGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes textGlow {
-            from { filter: brightness(1); }
-            to { filter: brightness(1.2); }
+            line-height: 1.2;
         }
 
         .hero-subtitle {
             font-size: 1.3rem;
             margin-bottom: 2rem;
-            opacity: 0.9;
+            opacity: 0.95;
+            max-width: 600px;
         }
 
-        .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 3rem;
+        .cta-button {
+            background-color: var(--accent-teal);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            cursor: pointer;
         }
 
-        .stat-item {
-            text-align: center;
+        .cta-button:hover {
+            background-color: #008A96;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 168, 181, 0.3);
+            color: white;
         }
 
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #00f2fe;
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
             display: block;
         }
 
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        /* Interactive Cards */
-        .interactive-cards {
-            padding: 5rem 0;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .modern-card {
-            background: var(--light-blue);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 168, 181, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10;
+        }
+
+        .play-icon:hover {
+            background: var(--accent-teal);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .play-icon i {
+            color: white;
+            font-size: 2rem;
+            margin-left: 8px;
+        }
+
+        /* Features Section */
+        .features-section {
+            background: var(--light-gray);
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark-blue);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Feature Cards */
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            height: 100%;
+            box-shadow: 0 5px 20px rgba(0, 102, 204, 0.08);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--primary-blue);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 102, 204, 0.15);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-teal) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h5 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        /* 360 Viewer Section */
+        .viewer-section {
+            background: white;
+            padding: 80px 0;
+        }
+
+        .viewer-wrapper {
+            background: var(--light-gray);
+            border-radius: 15px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
             position: relative;
             overflow: hidden;
         }
 
-        .modern-card::before {
-            content: '';
+        .viewer-placeholder {
+            text-align: center;
+            color: var(--text-gray);
+        }
+
+        .viewer-placeholder i {
+            font-size: 4rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .viewer-placeholder h3 {
+            color: var(--dark-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .viewer-controls {
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--primary-gradient);
-            transition: left 0.5s ease;
-            z-index: -1;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 1rem;
         }
 
-        .modern-card:hover::before {
-            left: 0;
+        .viewer-controls button {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
         }
 
-        .modern-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-hover);
+        .viewer-controls button:hover {
+            background: var(--dark-blue);
+            transform: scale(1.1);
         }
 
-        .modern-card:hover .card-title,
-        .modern-card:hover .card-description,
-        .modern-card:hover .text-muted {
-            color: white !important;
+        /* Instruments Section */
+        .instruments-section {
+            background: var(--light-gray);
+            padding: 80px 0;
         }
 
-        .card-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 15px;
+        .instrument-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .instrument-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 102, 204, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .instrument-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 102, 204, 0.15);
+        }
+
+        .instrument-image {
+            background: linear-gradient(135deg, var(--light-blue) 0%, rgba(0, 168, 181, 0.1) 100%);
+            height: 250px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1rem;
-            background: var(--primary-blue);
-            padding: 0.8rem;
-        }
-
-        .card-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* Slightly enlarge ENT logo without affecting others */
-        .ent-logo-icon img {
-            transform: scale(1.18);
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .card-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .card-progress {
-            margin-top: 1.5rem;
-        }
-
-        .progress-bar-modern {
-            height: 8px;
-            border-radius: 4px;
-            background: rgba(0, 0, 0, 0.1);
+            position: relative;
             overflow: hidden;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: var(--accent-gradient);
-            border-radius: 4px;
-            width: 0%;
-            transition: width 1s ease-out;
-        }
-
-        /* Module Content */
-        .module-content {
-            padding: 5rem 0;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .content-tabs {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .tab-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .tab-btn:hover,
-        .tab-btn.active {
-            background: var(--primary-gradient);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .content-list {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-        }
-
-        .content-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .content-item:hover {
-            background: rgba(102, 126, 234, 0.1);
-            transform: translateX(10px);
-        }
-
-        .content-item:last-child {
-            border-bottom: none;
-        }
-
-        .content-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            background: var(--secondary-gradient);
-            color: white;
-        }
-
-        .content-info h5 {
-            margin: 0;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .content-info small {
-            color: var(--text-secondary);
-        }
-
-        /* Auth Modal */
-        .auth-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .instrument-image::before {
+            content: '';
+            position: absolute;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="%23006699" stroke-width="0.5" opacity="0.2"/><circle cx="50" cy="50" r="40" fill="none" stroke="%23006699" stroke-width="0.5" opacity="0.15"/></svg>');
+            opacity: 0.3;
+        }
+
+        .instrument-image i {
+            font-size: 3.5rem;
+            color: var(--primary-blue);
+            z-index: 2;
+        }
+
+        .instrument-info {
+            padding: 1.5rem;
+        }
+
+        .instrument-info h5 {
+            color: var(--dark-blue);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .instrument-info p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge-reusable {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-teal) 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Specifications Section */
+        .specs-section {
+            background: white;
+            padding: 80px 0;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .spec-box {
+            background: var(--light-blue);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .spec-icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .spec-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .spec-label {
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark-blue);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer h6 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--accent-teal);
+        }
+
+        .footer ul {
+            list-style: none;
+        }
+
+        .footer ul li {
+            margin-bottom: 0.7rem;
+        }
+
+        .footer ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer ul li a:hover {
+            color: var(--accent-teal);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
+            color: white;
+            text-decoration: none;
             transition: all 0.3s ease;
         }
 
-        .auth-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .auth-content {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
+        .social-links a:hover {
+            background: var(--accent-teal);
+            transform: translateY(-3px);
         }
 
         /* Responsive */
@@ -462,277 +520,160 @@
                 font-size: 2.5rem;
             }
 
-            .hero-stats {
-                flex-direction: column;
-                gap: 1rem;
+            .section-title {
+                font-size: 2rem;
             }
 
-            .card-grid {
-                grid-template-columns: 1fr;
-                padding: 0 1rem;
+            .navbar-custom .navbar-brand {
+                font-size: 1.2rem;
             }
 
-            .tab-buttons {
-                flex-direction: column;
-                align-items: center;
+            .btn-nav {
+                padding: 0.4rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .instrument-image {
+                height: 200px;
+            }
+
+            .instrument-image i {
+                font-size: 2.5rem;
+            }
+
+            .cta-section h2 {
+                font-size: 2rem;
             }
         }
 
-        /* Auth visibility helpers */
-        .auth-only { display: none !important; }
-        .not-auth { display: block; }
-        .lms-logged-in .auth-only { display: block !important; }
-        .lms-logged-in .not-auth { display: none !important; }
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-on-scroll {
+            animation: slideUp 0.6s ease-out forwards;
+        }
+
+        /* Scroll to top button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            background: var(--dark-blue);
+            transform: translateY(-5px);
+        }
     </style>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="animated-bg"></div>
-
-    <!-- Floating Particles -->
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-
-    <!-- Header -->
-    <header class="modern-header" id="modernHeader">
-        <div class="container">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="logo-container">
-                    <img src="logo.png" alt="Claronav Logo">
-                    <div class="brand-text">
-                        <h1>Claronav</h1>
-                        <p>Advanced Training Platform</p>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <button id="authBtn" class="btn btn-outline-light">Login / Sign up</button>
-                    <button id="menuToggle" class="btn btn-outline-light">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-lg">
+            <a class="navbar-brand" href="#home">
+                <img src="logo.png" alt="Claronav Logo" style="height: 40px; margin-right: 10px;">Claronav
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#footer">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="login.html" class="btn btn-nav ms-2">Training</a>
+                    </li>
+                </ul>
             </div>
         </div>
+    </nav>
 
-        <!-- Side Menu -->
-        <div id="sideMenu" class="position-absolute" style="display: none; right: 20px; top: 80px;">
-            <div class="card" style="width: 200px;">
-                <div class="list-group list-group-flush">
-                    <a href="#home" id="menuHome" class="list-group-item list-group-item-action">Home</a>
-                    <a href="#modules" class="list-group-item list-group-item-action">Modules</a>
-                    <a href="#about" class="list-group-item list-group-item-action">About</a>
-                    <a href="#support" class="list-group-item list-group-item-action">Support</a>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
+    <!-- Hero Section with Video -->
     <section class="hero-section" id="home">
-        <div class="container">
-            <div class="hero-carousel">
-                <div class="hero-slide active" id="slide1">
-                    <div class="hero-content">
-                        <h1 class="hero-title">Welcome to Advanced Navigation Training</h1>
-                        <p class="hero-subtitle">Master the latest techniques in surgical navigation with our comprehensive, interactive learning platform designed for medical professionals.</p>
-                    </div>
+        <div class="container-lg">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content mb-5 mb-lg-0">
+                    <h1 class="hero-title">Navient Training Platform</h1>
+                    <p class="hero-subtitle">Master Advanced Surgical Navigation</p>
+                    <p style="font-size: 1.1rem; margin-bottom: 2rem;">Comprehensive training materials and interactive modules for the Navient surgical navigation system. Learn from experts and advance your surgical expertise.</p>
+                    <a href="login.html" class="cta-button">
+                        <i class="fas fa-book me-2"></i>Start Learning
+                    </a>
                 </div>
-                <div class="hero-slide" id="slide2">
-                    <div class="hero-content">
-                        <h1 class="hero-title">Precision Meets Innovation</h1>
-                        <p class="hero-subtitle">Experience cutting-edge navigation technology with hands-on training modules covering cranial, spine, and ENT procedures.</p>
-                    </div>
-                </div>
-                <div class="hero-slide" id="slide3">
-                    <div class="hero-content">
-                        <h1 class="hero-title">Your Journey Starts Here</h1>
-                        <p class="hero-subtitle">Join thousands of medical professionals who trust Claronav for their surgical navigation training and certification.</p>
+                <div class="col-lg-6">
+                    <div class="video-container">
+                        <video id="mainVideo" width="100%" height="auto" controls>
+                            <source src="Navient animated.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Interactive Cards Section -->
-    <section class="interactive-cards">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Training Modules</h2>
-                <p style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem;">Explore our comprehensive training programs designed for different surgical specialties</p>
-            </div>
 
-            <div class="card-grid">
-                <div class="modern-card" data-module="cranial">
-                    <div class="card-icon">
-                        <img src="cranial-logo.png" alt="Cranial Navigation">
-                    </div>
-                    <h3 class="card-title">Cranial Navigation</h3>
-                    <p class="card-description">Master cranial procedures with advanced navigation techniques, from basic introductions to complex case studies.</p>
-                    <div class="card-progress">
-                        <div class="progress-bar-modern">
-                            <div class="progress-fill" id="cranialProgress" style="width: 0%;"></div>
+
+    <!-- 360 Viewer Section -->
+    <section class="viewer-section" id="viewer">
+        <div class="container-lg">
+            <h2 class="section-title mb-5">360° Product Viewer</h2>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="viewer-wrapper">
+                        <div class="viewer-placeholder">
+                            <i class="fas fa-cube"></i>
+                            <h3>Interactive 360° View</h3>
+                            <p>Drag to rotate • Scroll to zoom</p>
+                            <p style="font-size: 0.9rem; color: var(--primary-blue); margin-top: 1rem;">
+                                <i class="fas fa-info-circle me-2"></i>Product model loading...
+                            </p>
                         </div>
-                        <small class="text-muted mt-1 d-block">Progress: <span id="cranialPercent">0%</span></small>
-                    </div>
-                </div>
-
-                <div class="modern-card" data-module="spine">
-                    <div class="card-icon">
-                        <img src="spine-logo.png" alt="Spine Navigation">
-                    </div>
-                    <h3 class="card-title">Spine Navigation</h3>
-                    <p class="card-description">Learn precise spine navigation techniques, including planning, execution, and advanced surgical tips.</p>
-                    <div class="card-progress">
-                        <div class="progress-bar-modern">
-                            <div class="progress-fill" id="spineProgress" style="width: 0%;"></div>
-                        </div>
-                        <small class="text-muted mt-1 d-block">Progress: <span id="spinePercent">0%</span></small>
-                    </div>
-                </div>
-
-                <div class="modern-card" data-module="ent">
-                    <div class="card-icon ent-logo-icon">
-                        <img src="ent-logo.png" alt="ENT Navigation">
-                    </div>
-                    <h3 class="card-title">ENT Navigation</h3>
-                    <p class="card-description">Specialized ENT navigation training covering unique workflows and practical exercises for ear procedures.</p>
-                    <div class="card-progress">
-                        <div class="progress-bar-modern">
-                            <div class="progress-fill" id="entProgress" style="width: 0%;"></div>
-                        </div>
-                        <small class="text-muted mt-1 d-block">Progress: <span id="entPercent">0%</span></small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Module Content Section -->
-    <section class="module-content auth-only" id="modules">
-        <div class="container">
-            <div class="content-tabs">
-                <div class="tab-buttons">
-                    <button class="tab-btn active" data-tab="cranial">
-                        <img src="cranial-logo.png" alt="Cranial" style="width: 24px; height: 24px; border-radius: 6px;">
-                        Cranial Navigation
-                    </button>
-                    <button class="tab-btn" data-tab="spine">
-                        <img src="spine-logo.png" alt="Spine" style="width: 24px; height: 24px; border-radius: 6px;">
-                        Spine Navigation
-                    </button>
-                    <button class="tab-btn" data-tab="ent">
-                        <img src="ent-logo.png" alt="ENT" style="width: 24px; height: 24px; border-radius: 6px;">
-                        ENT Navigation
-                    </button>
-                </div>
-
-                <div id="cranialTab" class="tab-content active">
-                    <div class="content-list">
-                        <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Cranial Navigation Content</h4>
-                        <div id="cranialContentList">
-                            <div class="content-item">
-                                <div class="content-icon">
-                                    <i class="fas fa-circle-play"></i>
-                                </div>
-                                <div class="content-info">
-                                    <h5>Introduction to Cranial Navigation</h5>
-                                    <small>Video • 15 min</small>
-                                </div>
-                            </div>
-                            <div class="content-item">
-                                <div class="content-icon">
-                                    <i class="fas fa-video"></i>
-                                </div>
-                                <div class="content-info">
-                                    <h5>Workflow & Instrumentation</h5>
-                                    <small>Video • 25 min</small>
-                                </div>
-                            </div>
-                            <div class="content-item">
-                                <div class="content-icon">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                                <div class="content-info">
-                                    <h5>Case Studies</h5>
-                                    <small>Interactive • 30 min</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="spineTab" class="tab-content">
-                    <div class="content-list">
-                        <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">Spine Navigation Content</h4>
-                        <div id="spineContentList">
-                            <div class="content-item">
-                                <div class="content-icon">
-                                    <i class="fas fa-circle-play"></i>
-                                </div>
-                                <div class="content-info">
-                                    <h5>Introduction to Spine Navigation</h5>
-                                    <small>Video • 12 min</small>
-                                </div>
-                            </div>
-                            <div class="content-item">
-                                <div class="content-icon">
-                                    <i class="fas fa-video"></i>
-                                </div>
-                                <div class="content-info">
-                                    <h5>Planning & Execution</h5>
-                                    <small>Video • 28 min</small>
-                                </div>
-                            </div>
-                            <div class="content-item">
-                                <div class="content-icon">
-                                    <i class="fas fa-lightbulb"></i>
-                                </div>
-                                <div class="content-info">
-                                    <h5>Advanced Tips</h5>
-                                    <small>Interactive • 20 min</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="entTab" class="tab-content">
-                    <div class="content-list">
-                        <h4 style="color: var(--text-primary); margin-bottom: 1.5rem;">ENT Navigation Content</h4>
-                        <div id="entContentList">
-                            <div class="content-item">
-                                <div class="content-icon">
-                                    <i class="fas fa-circle-play"></i>
-                                </div>
-                                <div class="content-info">
-                                    <h5>Introduction to ENT Navigation</h5>
-                                    <small>Video • 18 min</small>
-                                </div>
-                            </div>
-                            <div class="content-item">
-                                <div class="content-icon">
-                                    <i class="fas fa-video"></i>
-                                </div>
-                                <div class="content-info">
-                                    <h5>ENT Workflows</h5>
-                                    <small>Video • 22 min</small>
-                                </div>
-                            </div>
-                            <div class="content-item">
-                                <div class="content-icon">
-                                    <i class="fas fa-flask"></i>
-                                </div>
-                                <div class="content-info">
-                                    <h5>Practical Exercises</h5>
-                                    <small>Interactive • 35 min</small>
-                                </div>
-                            </div>
+                        <div class="viewer-controls">
+                            <button id="rotateLeft" title="Rotate Left">
+                                <i class="fas fa-redo fa-flip-horizontal"></i>
+                            </button>
+                            <button id="rotateRight" title="Rotate Right">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                            <button id="zoomIn" title="Zoom In">
+                                <i class="fas fa-magnifying-glass-plus"></i>
+                            </button>
+                            <button id="zoomOut" title="Zoom Out">
+                                <i class="fas fa-magnifying-glass-minus"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -740,313 +681,158 @@
         </div>
     </section>
 
-    <!-- Auth Modal -->
-    <div class="auth-modal" id="authModal">
-        <div class="auth-content">
-            <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Access Required</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Please login or sign up to access the training modules and track your progress.</p>
-            <div class="d-flex gap-3 justify-content-center">
-                <a href="login.html" class="btn btn-primary">Login</a>
-                <a href="signup.html" class="btn btn-outline-primary">Sign Up</a>
+
+
+
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container-lg">
+            <h2>Ready to Get Started?</h2>
+            <p>Access comprehensive training modules and advance your surgical navigation skills today</p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="login.html" class="cta-button" style="background-color: var(--accent-teal);">
+                    <i class="fas fa-graduation-cap me-2"></i>Access Training
+                </a>
+                <button class="cta-button" style="background-color: white; color: var(--primary-blue); border: 2px solid white;" onclick="alert('Contact: info@claronav.com')">
+                    <i class="fas fa-envelope me-2"></i>Contact Support
+                </button>
             </div>
         </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer">
+        <div class="container-lg">
+            <div class="row mb-4">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h6>Contact Us</h6>
+                    <ul>
+                        <li><a href="mailto:info@claronav.com">info@claronav.com</a></li>
+                        <li><a href="tel:+16479511525">+1 (647) 951-1525</a></li>
+                        <li><a href="tel:+18446284336">+1 (844) 628-4336</a></li>
+                        <li>1140 Sheppard Ave W Unit 10<br>Toronto, Ontario, Canada M3K 2A2</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6>Connect With Us</h6>
+                    <p style="color: white; margin-bottom: 1.5rem;">
+                        <a href="https://medical.claronav.com/" target="_blank" style="color: white; text-decoration: none; font-weight: 600;">Claronav Kolahi Inc.</a>
+                    </p>
+                    <p style="color: white;">
+                        <a href="https://www.linkedin.com/company/claronav-kolahi-inc/" target="_blank" style="display: inline-flex; align-items: center; color: white; text-decoration: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3536/3536505.png" alt="LinkedIn" style="width: 30px; height: 30px; margin-right: 8px;">@claronav kolahi.inc
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="footer-bottom text-center">
+                <p>&copy; 2026 Claronav Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <div class="scroll-to-top" id="scrollToTop">
+        <i class="fas fa-arrow-up"></i>
     </div>
 
-    <script>
-        // Check authentication - redirect to login if not authenticated
-        try {
-            const hasToken = !!localStorage.getItem('lmsToken');
-            const hasLocal = !!localStorage.getItem('lmsUser');
-            
-            // Redirect to login page if not authenticated
-            if (!hasToken && !hasLocal) {
-                window.location.href = 'login.html';
-            }
-            
-            if (hasToken || hasLocal) document.documentElement.classList.add('lms-logged-in');
-            else document.documentElement.classList.remove('lms-logged-in');
-        } catch (e) { /* ignore */ }
-    </script>
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.getElementById('modernHeader');
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-
-        // Hero carousel functionality
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.hero-slide');
-        const totalSlides = slides.length;
-
-        function showSlide(index) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            slides[index].classList.add('active');
-            animateStats(index);
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            showSlide(currentSlide);
-        }
-
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            showSlide(currentSlide);
-        }
-
-        document.getElementById('nextSlide').addEventListener('click', nextSlide);
-        document.getElementById('prevSlide').addEventListener('click', prevSlide);
-
-        // Auto slide change every 5 seconds
-        setInterval(nextSlide, 5000);
-
-        // Animated statistics counters
-        function animateStats(slideIndex) {
-            const stats = slides[slideIndex].querySelectorAll('.stat-number');
-            stats.forEach(stat => {
-                const target = parseInt(stat.getAttribute('data-target'));
-                animateCounter(stat, 0, target, 2000);
-            });
-        }
-
-        function animateCounter(element, start, end, duration) {
-            const startTime = performance.now();
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const current = Math.floor(start + (end - start) * progress);
-                element.textContent = current;
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                }
-            }
-            requestAnimationFrame(update);
-        }
-
-        // Initialize first slide stats
-        animateStats(0);
-
-        // Tab switching functionality
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const tabName = button.getAttribute('data-tab');
-
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-
-                button.classList.add('active');
-                document.getElementById(tabName + 'Tab').classList.add('active');
-            });
-        });
-
-        // Menu toggle
-        const menuToggle = document.getElementById('menuToggle');
-        const sideMenu = document.getElementById('sideMenu');
-
-        menuToggle.addEventListener('click', () => {
-            sideMenu.style.display = sideMenu.style.display === 'block' ? 'none' : 'block';
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!sideMenu.contains(e.target) && !menuToggle.contains(e.target)) {
-                sideMenu.style.display = 'none';
-            }
-        });
-
-        // Menu navigation
-        document.getElementById('menuHome').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
-            sideMenu.style.display = 'none';
-        });
-
-        // Auth UI handlers
-        const authBtn = document.getElementById('authBtn');
-        const authModal = document.getElementById('authModal');
-
-        function updateAuthUI() {
-            const token = localStorage.getItem('lmsToken');
-            const name = localStorage.getItem('lmsName');
-            const localUser = localStorage.getItem('lmsUser');
-            if (token && name) {
-                authBtn.textContent = name + ' (Logout)';
-                authModal.classList.remove('active');
-            } else if (localUser) {
-                try {
-                    const u = JSON.parse(localUser);
-                    authBtn.textContent = (u.name || 'User') + ' (Logout)';
-                    authModal.classList.remove('active');
-                } catch (e) {
-                    authBtn.textContent = 'Logout';
-                }
-            } else {
-                authBtn.textContent = 'Login / Sign up';
-            }
-        }
-
-        authBtn.addEventListener('click', () => {
-            const token = localStorage.getItem('lmsToken');
-            const localUser = localStorage.getItem('lmsUser');
-            if (token || localUser) {
-                localStorage.removeItem('lmsToken');
-                localStorage.removeItem('lmsName');
-                localStorage.removeItem('lmsUser');
-                updateAuthUI();
-                refreshAuthState();
-                authModal.classList.add('active');
-            } else {
-                window.location.href = 'login.html';
-            }
-        });
-
-        // Show auth modal for non-authenticated users trying to access modules
-        document.querySelectorAll('.modern-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const token = localStorage.getItem('lmsToken');
-                const localUser = localStorage.getItem('lmsUser');
-                if (!token && !localUser) {
-                    authModal.classList.add('active');
-                } else {
-                    // Navigate to module content
-                    const module = card.getAttribute('data-module');
-                    document.querySelector(`[data-tab="${module}"]`).click();
-                    document.getElementById('modules').scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-
-        // Close modal when clicking outside
-        authModal.addEventListener('click', (e) => {
-            if (e.target === authModal) {
-                authModal.classList.remove('active');
-            }
-        });
-
-        // LMS area visibility and progress loading
-        async function refreshAuthState() {
-            const token = localStorage.getItem('lmsToken');
-            const localUser = localStorage.getItem('lmsUser');
-            if (!token) {
-                if (localUser) {
-                    document.querySelectorAll('.auth-only').forEach(el => el.style.display = 'block');
-                    document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
-                    updateAuthUI();
-                    return;
-                }
-                document.querySelectorAll('.auth-only').forEach(el => el.style.display = 'none');
-                updateAuthUI();
-                return;
-            }
-
-            try {
-                const API_BASE = localStorage.getItem('API_BASE') || 'https://claronav-lms.onrender.com';
-                const resp = await fetch(API_BASE + '/api/progress?token=' + encodeURIComponent(token));
-                const j = await resp.json();
-                if (!resp.ok) throw new Error(j.error || 'Failed to fetch progress');
-                const p = j.progress || {};
-
-                // Update progress bars with animation
-                updateProgress('cranial', p.cranial || 0);
-                updateProgress('spine', p.spine || 0);
-                updateProgress('ent', p.ent || 0);
-
-                // Load module content
-                loadModuleContents();
-
-                document.querySelectorAll('.auth-only').forEach(el => el.style.display = 'block');
-                document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
-                updateAuthUI();
-            } catch (err) {
-                localStorage.removeItem('lmsToken');
-                document.querySelectorAll('.auth-only').forEach(el => el.style.display = 'none');
-                updateAuthUI();
-            }
-        }
-
-        function updateProgress(module, percentage) {
-            const progressBar = document.getElementById(module + 'Progress');
-            const percentText = document.getElementById(module + 'Percent');
-            if (progressBar && percentText) {
-                progressBar.style.width = percentage + '%';
-                percentText.textContent = percentage + '%';
-            }
-        }
-
-        // Fetch and render module content
-        async function loadModuleContents() {
-            const API_BASE = localStorage.getItem('API_BASE') || 'https://claronav-lms.onrender.com';
-            const modules = ['cranial', 'spine', 'ent'];
-            for (const m of modules) {
-                try {
-                    const resp = await fetch(API_BASE + '/api/modules/content?module=' + encodeURIComponent(m));
-                    const j = await resp.json();
-                    const items = (j && j.content) || [];
-                    const container = document.getElementById(m + 'ContentList');
-                    if (!container) continue;
-
-                    // Clear existing content except default items
-                    const defaultItems = container.querySelectorAll('.content-item');
-                    defaultItems.forEach(item => item.remove());
-
-                    if (items.length === 0) {
-                        container.innerHTML += '<div class="content-item"><div class="content-info"><small class="text-muted">No additional content available.</small></div></div>';
-                        continue;
-                    }
-
-                    items.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'content-item';
-                        div.innerHTML = `
-                            <div class="content-icon">
-                                <i class="fa-solid ${item.type === 'pdf' ? 'fa-file-pdf' : item.type === 'ppt' ? 'fa-file-powerpoint' : 'fa-video'}"></i>
-                            </div>
-                            <div class="content-info">
-                                <h5>${item.title}</h5>
-                                <small>${new Date(item.uploadedAt).toLocaleString()}</small>
-                            </div>
-                        `;
-                        div.addEventListener('click', () => {
-                            window.open((API_BASE + '/uploads/' + encodeURIComponent(item.filename)), '_blank');
-                        });
-                        container.appendChild(div);
-                    });
-                } catch (e) {
-                    const container = document.getElementById(m + 'ContentList');
-                    if (container) {
-                        const errorItem = container.querySelector('.content-item:last-child');
-                        if (errorItem) errorItem.innerHTML = '<div class="content-info"><small class="text-muted">Error loading content</small></div>';
-                    }
-                }
-            }
-        }
-
-        // Initialize
-        updateAuthUI();
-        refreshAuthState();
-
-        // Smooth scrolling for menu links
+        // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth'
-                    });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
+        });
+
+        // Scroll to top button
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-on-scroll');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .instrument-card, .spec-box').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 360 Viewer controls (placeholder functionality)
+        document.getElementById('rotateLeft').addEventListener('click', () => {
+            console.log('Rotating left...');
+            alert('360° viewer rotation controls active');
+        });
+
+        document.getElementById('rotateRight').addEventListener('click', () => {
+            console.log('Rotating right...');
+            alert('360° viewer rotation controls active');
+        });
+
+        document.getElementById('zoomIn').addEventListener('click', () => {
+            console.log('Zooming in...');
+            alert('Zoom functionality active');
+        });
+
+        document.getElementById('zoomOut').addEventListener('click', () => {
+            console.log('Zooming out...');
+            alert('Zoom functionality active');
+        });
+
+        // Navbar collapse on link click
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 992) {
+                    navbarCollapse.classList.remove('show');
+                }
+            });
+        });
+
+        // Smart training link handler
+        function handleTrainingLink(e) {
+            e.preventDefault();
+            const hasToken = !!localStorage.getItem('lmsToken');
+            const hasLocal = !!localStorage.getItem('lmsUser');
+            
+            if (hasToken || hasLocal) {
+                // User is logged in - go directly to training
+                window.location.href = 'dashboard.html';
+            } else {
+                // User not logged in - go to login
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Attach training link handler to all training links
+        document.querySelectorAll('a[href="login.html"]').forEach(link => {
+            link.addEventListener('click', handleTrainingLink);
         });
     </script>
 </body>
