@@ -100,6 +100,59 @@ app.post('/api/progress', (req, res) => {
   res.json({ success: true });
 });
 
+// Get user profile
+app.get('/api/profile', (req, res) => {
+  const token = req.query.token;
+  if (!token) return res.status(400).json({ error: 'Missing token' });
+  const data = readData();
+  const email = data.sessions[token];
+  if (!email) return res.status(401).json({ error: 'Unauthorized' });
+  const user = data.users[email];
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  // Don't send password
+  const { password, ...userWithoutPassword } = user;
+  res.json({ success: true, user: userWithoutPassword });
+});
+
+// Update user profile
+app.post('/api/profile', (req, res) => {
+  const { token, firstName, lastName, serial, hospital } = req.body;
+  if (!token) return res.status(400).json({ error: 'Missing token' });
+  const data = readData();
+  const email = data.sessions[token];
+  if (!email) return res.status(401).json({ error: 'Unauthorized' });
+  const user = data.users[email];
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  
+  // Update user data
+  if (firstName) user.firstName = firstName;
+  if (lastName) user.lastName = lastName;
+  if (serial) user.serial = serial;
+  if (hospital) user.hospital = hospital;
+  
+  writeData(data);
+  res.json({ success: true, message: 'Profile updated successfully' });
+});
+
+// Change password
+app.post('/api/change-password', (req, res) => {
+  const { token, currentPassword, newPassword } = req.body;
+  if (!token || !currentPassword || !newPassword) return res.status(400).json({ error: 'Missing fields' });
+  const data = readData();
+  const email = data.sessions[token];
+  if (!email) return res.status(401).json({ error: 'Unauthorized' });
+  const user = data.users[email];
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  
+  // Verify current password
+  if (user.password !== currentPassword) return res.status(401).json({ error: 'Current password is incorrect' });
+  
+  // Update password
+  user.password = newPassword;
+  writeData(data);
+  res.json({ success: true, message: 'Password changed successfully' });
+});
+
 // ============ ADMIN ENDPOINTS ============
 
 // Admin login

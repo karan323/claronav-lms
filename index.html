@@ -76,6 +76,121 @@
             box-shadow: 0 5px 15px rgba(0, 168, 181, 0.3);
         }
 
+        /* User Avatar Dropdown */
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--accent-teal);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 168, 181, 0.4);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            min-width: 220px;
+            display: none;
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .user-dropdown.show {
+            display: block;
+            animation: dropdownSlide 0.3s ease;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #E0E0E0;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: white;
+        }
+
+        .user-dropdown-header h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-dropdown-header p {
+            margin: 0;
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .user-dropdown-menu {
+            list-style: none;
+            padding: 0.5rem 0;
+            margin: 0;
+        }
+
+        .user-dropdown-menu li {
+            padding: 0;
+        }
+
+        .user-dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-gray);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .user-dropdown-menu a:hover {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        .user-dropdown-menu a i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #E0E0E0;
+            margin: 0.5rem 0;
+        }
+
         /* Hero Section with Video */
         .hero-section {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
@@ -612,8 +727,26 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#footer">Contact Us</a>
                     </li>
-                    <li class="nav-item">
-                        <a href="login.html" class="btn btn-nav ms-2">Login / Sign up</a>
+                    <li class="nav-item" id="authNavItem">
+                        <a href="login.html" class="btn btn-nav ms-2" id="loginBtn">Login / Sign up</a>
+                        <div class="user-avatar" id="userAvatar" style="display: none;">
+                            <span id="userInitials"></span>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="user-dropdown-header">
+                                <h6 id="dropdownUserName">User Name</h6>
+                                <p id="dropdownUserEmail" style="font-size: 0.75rem;">user@email.com</p>
+                            </div>
+                            <ul class="user-dropdown-menu">
+                                <li><a href="dashboard.html#cranial"><i class="fas fa-brain"></i> Cranial</a></li>
+                                <li><a href="dashboard.html#ent"><i class="fas fa-stethoscope"></i> ENT</a></li>
+                                <li><a href="dashboard.html#spine"><i class="fas fa-user-injured"></i> Spine</a></li>
+                                <div class="dropdown-divider"></div>
+                                <li><a href="dashboard.html#profile"><i class="fas fa-user-circle"></i> Profile</a></li>
+                                <div class="dropdown-divider"></div>
+                                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -834,6 +967,65 @@
         document.querySelectorAll('a.cta-button[href="login.html"]').forEach(link => {
             link.addEventListener('click', handleTrainingLink);
         });
+
+        // User Avatar and Dropdown functionality
+        function updateUserNav() {
+            const token = localStorage.getItem('lmsToken');
+            const name = localStorage.getItem('lmsName');
+            const email = localStorage.getItem('lmsEmail');
+            const loginBtn = document.getElementById('loginBtn');
+            const userAvatar = document.getElementById('userAvatar');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (token && name) {
+                // User is logged in - show avatar
+                loginBtn.style.display = 'none';
+                userAvatar.style.display = 'flex';
+                
+                // Get initials
+                const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                document.getElementById('userInitials').textContent = initials;
+                document.getElementById('dropdownUserName').textContent = name;
+                document.getElementById('dropdownUserEmail').textContent = email || '';
+                
+                // Check for profile photo
+                const profilePhoto = localStorage.getItem('lmsProfilePhoto');
+                if (profilePhoto) {
+                    document.getElementById('userInitials').innerHTML = `<img src="${profilePhoto}" alt="Profile">`;
+                }
+            } else {
+                // User not logged in - show login button
+                loginBtn.style.display = 'inline-block';
+                userAvatar.style.display = 'none';
+            }
+        }
+
+        // Toggle dropdown
+        document.getElementById('userAvatar')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('userDropdown').classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && !e.target.closest('#userAvatar') && !e.target.closest('#userDropdown')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Logout handler
+        document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('lmsToken');
+            localStorage.removeItem('lmsName');
+            localStorage.removeItem('lmsEmail');
+            localStorage.removeItem('lmsProfilePhoto');
+            window.location.href = 'index.html';
+        });
+
+        // Initialize on load
+        updateUserNav();
     </script>
 </body>
 </html>

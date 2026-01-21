@@ -512,7 +512,26 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <button id="authBtn" class="btn btn-outline-light">Login / Sign up</button>
+                    <div class="user-avatar-container" style="position: relative;">
+                        <div class="user-avatar" id="dashboardUserAvatar" style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; border: 3px solid rgba(255, 255, 255, 0.3); transition: all 0.3s ease;">
+                            <span id="dashboardUserInitials"></span>
+                        </div>
+                        <div class="user-dropdown" id="dashboardUserDropdown" style="position: absolute; top: 60px; right: 0; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); min-width: 220px; display: none; z-index: 1001; overflow: hidden;">
+                            <div class="user-dropdown-header" style="padding: 1rem; background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%); color: white;">
+                                <h6 id="dashDropdownUserName" style="margin: 0; font-weight: 600; font-size: 0.95rem;">User Name</h6>
+                                <p id="dashDropdownUserEmail" style="margin: 0; font-size: 0.75rem; opacity: 0.9;">user@email.com</p>
+                            </div>
+                            <ul class="user-dropdown-menu" style="list-style: none; padding: 0.5rem 0; margin: 0;">
+                                <li><a href="#cranial" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-gray); text-decoration: none; transition: all 0.2s ease;"><i class="fas fa-brain" style="width: 20px;"></i> Cranial</a></li>
+                                <li><a href="#ent" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-gray); text-decoration: none; transition: all 0.2s ease;"><i class="fas fa-stethoscope" style="width: 20px;"></i> ENT</a></li>
+                                <li><a href="#spine" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-gray); text-decoration: none; transition: all 0.2s ease;"><i class="fas fa-user-injured" style="width: 20px;"></i> Spine</a></li>
+                                <div style="height: 1px; background: #E0E0E0; margin: 0.5rem 0;"></div>
+                                <li><a href="#profile" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-gray); text-decoration: none; transition: all 0.2s ease;"><i class="fas fa-user-circle" style="width: 20px;"></i> Profile</a></li>
+                                <div style="height: 1px; background: #E0E0E0; margin: 0.5rem 0;"></div>
+                                <li><a href="#" id="dashLogoutBtn" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: var(--text-gray); text-decoration: none; transition: all 0.2s ease;"><i class="fas fa-sign-out-alt" style="width: 20px;"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
                     <button id="menuToggle" class="btn btn-outline-light">
                         <i class="fas fa-bars"></i>
                     </button>
@@ -731,6 +750,99 @@
                                 <div class="content-info">
                                     <h5>Practical Exercises</h5>
                                     <small>Interactive • 35 min</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section class="profile-section auth-only" id="profile" style="display: none; padding: 4rem 0; min-height: 100vh;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+                        <div class="card-header text-center" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%); color: white; padding: 2rem;">
+                            <h2 class="mb-0"><i class="fas fa-user-circle me-2"></i>My Profile</h2>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Profile Photo Section -->
+                            <div class="text-center mb-4">
+                                <div class="profile-photo-container" style="position: relative; display: inline-block;">
+                                    <div id="profilePhotoDisplay" style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal)); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; font-weight: 700; margin: 0 auto; border: 5px solid #E6F2FF; box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);">
+                                        <span id="profileInitials"></span>
+                                    </div>
+                                    <label for="profilePhotoInput" class="btn btn-primary btn-sm" style="position: absolute; bottom: 10px; right: -10px; border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                    <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
+                                </div>
+                                <p class="mt-2 text-muted" style="font-size: 0.85rem;">Click camera icon to change photo</p>
+                            </div>
+
+                            <!-- Profile Form -->
+                            <form id="profileForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold"><i class="fas fa-user me-2"></i>First Name</label>
+                                        <input type="text" class="form-control" id="profileFirstName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold"><i class="fas fa-user me-2"></i>Last Name</label>
+                                        <input type="text" class="form-control" id="profileLastName" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold"><i class="fas fa-envelope me-2"></i>Email Address</label>
+                                    <input type="email" class="form-control" id="profileEmail" readonly style="background-color: #f5f5f5;">
+                                    <small class="text-muted">Email cannot be changed</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold"><i class="fas fa-barcode me-2"></i>System Serial Number</label>
+                                    <input type="text" class="form-control" id="profileSerial" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold"><i class="fas fa-hospital me-2"></i>Hospital Name</label>
+                                    <input type="text" class="form-control" id="profileHospital" required>
+                                </div>
+                                <div id="profileUpdateMessage" class="alert" style="display: none;"></div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Save Changes
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#changePasswordSection">
+                                        <i class="fas fa-key me-2"></i>Change Password
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Change Password Section -->
+                            <div class="collapse mt-4" id="changePasswordSection">
+                                <div class="card" style="background-color: #f8f9fa; border-radius: 15px;">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-3"><i class="fas fa-lock me-2"></i>Change Password</h5>
+                                        <form id="changePasswordForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">Current Password</label>
+                                                <input type="password" class="form-control" id="currentPassword" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">New Password</label>
+                                                <input type="password" class="form-control" id="newPassword" required minlength="6">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Confirm New Password</label>
+                                                <input type="password" class="form-control" id="confirmPassword" required>
+                                            </div>
+                                            <div id="passwordChangeMessage" class="alert" style="display: none;"></div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-check me-2"></i>Update Password
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1035,6 +1147,246 @@
         // Initialize
         updateAuthUI();
         refreshAuthState();
+
+        // Initialize dashboard user avatar
+        function initDashboardUserAvatar() {
+            const name = localStorage.getItem('lmsName');
+            const email = localStorage.getItem('lmsEmail');
+            const dashAvatar = document.getElementById('dashboardUserAvatar');
+            const dashDropdown = document.getElementById('dashboardUserDropdown');
+            
+            if (name && dashAvatar) {
+                const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                document.getElementById('dashboardUserInitials').textContent = initials;
+                document.getElementById('dashDropdownUserName').textContent = name;
+                document.getElementById('dashDropdownUserEmail').textContent = email || '';
+                
+                // Check for profile photo
+                const profilePhoto = localStorage.getItem('lmsProfilePhoto');
+                if (profilePhoto) {
+                    document.getElementById('dashboardUserInitials').innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                }
+                
+                // Toggle dropdown
+                dashAvatar.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dashDropdown.style.display = dashDropdown.style.display === 'none' ? 'block' : 'none';
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.user-avatar-container')) {
+                        dashDropdown.style.display = 'none';
+                    }
+                });
+                
+                // Dropdown links
+                dashDropdown.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('mouseenter', (e) => {
+                        e.target.style.background = 'var(--light-blue)';
+                        e.target.style.color = 'var(--primary-blue)';
+                    });
+                    link.addEventListener('mouseleave', (e) => {
+                        e.target.style.background = '';
+                        e.target.style.color = 'var(--text-gray)';
+                    });
+                });
+                
+                // Logout handler
+                document.getElementById('dashLogoutBtn')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('lmsToken');
+                    localStorage.removeItem('lmsName');
+                    localStorage.removeItem('lmsEmail');
+                    localStorage.removeItem('lmsProfilePhoto');
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+        
+        initDashboardUserAvatar();
+
+        // Handle URL hash navigation (including profile)
+        function handleHashNavigation() {
+            const hash = window.location.hash.substring(1); // Remove #
+            
+            // Hide all sections first
+            document.querySelectorAll('.hero-section, .interactive-cards, .module-content, .profile-section').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            if (hash === 'profile') {
+                document.getElementById('profile').style.display = 'block';
+                loadProfileData();
+            } else if (hash === 'cranial' || hash === 'spine' || hash === 'ent') {
+                document.getElementById('modules').style.display = 'block';
+                // Switch to the correct tab
+                const tabBtn = document.querySelector(`.tab-btn[data-tab="${hash}"]`);
+                if (tabBtn) tabBtn.click();
+            } else {
+                // Show home sections
+                document.querySelector('.hero-section').style.display = 'block';
+                document.querySelector('.interactive-cards').style.display = 'block';
+                document.getElementById('modules').style.display = 'block';
+            }
+        }
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', handleHashNavigation);
+        handleHashNavigation(); // Initial load
+
+        // Profile functionality
+        async function loadProfileData() {
+            const token = localStorage.getItem('lmsToken');
+            const name = localStorage.getItem('lmsName');
+            const email = localStorage.getItem('lmsEmail');
+            
+            if (!token) return;
+            
+            try {
+                const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
+                const resp = await fetch(API_BASE + '/api/profile?token=' + encodeURIComponent(token));
+                const data = await resp.json();
+                
+                if (resp.ok && data.user) {
+                    document.getElementById('profileFirstName').value = data.user.firstName || '';
+                    document.getElementById('profileLastName').value = data.user.lastName || '';
+                    document.getElementById('profileEmail').value = data.user.email || email || '';
+                    document.getElementById('profileSerial').value = data.user.serial || '';
+                    document.getElementById('profileHospital').value = data.user.hospital || '';
+                    
+                    // Set initials
+                    const initials = (data.user.firstName?.[0] || '') + (data.user.lastName?.[0] || '');
+                    document.getElementById('profileInitials').textContent = initials.toUpperCase();
+                    
+                    // Load profile photo if exists
+                    const profilePhoto = localStorage.getItem('lmsProfilePhoto');
+                    if (profilePhoto) {
+                        document.getElementById('profilePhotoDisplay').innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading profile:', e);
+            }
+        }
+
+        // Profile photo upload
+        document.getElementById('profilePhotoInput')?.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const photoData = event.target.result;
+                    localStorage.setItem('lmsProfilePhoto', photoData);
+                    document.getElementById('profilePhotoDisplay').innerHTML = `<img src="${photoData}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                    
+                    // Update navbar avatar if exists
+                    const userInitials = document.getElementById('userInitials');
+                    if (userInitials) {
+                        userInitials.innerHTML = `<img src="${photoData}" alt="Profile">`;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Profile form submission
+        document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('lmsToken');
+            const messageEl = document.getElementById('profileUpdateMessage');
+            
+            try {
+                const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
+                const resp = await fetch(API_BASE + '/api/profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token,
+                        firstName: document.getElementById('profileFirstName').value,
+                        lastName: document.getElementById('profileLastName').value,
+                        serial: document.getElementById('profileSerial').value,
+                        hospital: document.getElementById('profileHospital').value
+                    })
+                });
+                
+                const data = await resp.json();
+                
+                if (resp.ok) {
+                    // Update localStorage
+                    const newName = document.getElementById('profileFirstName').value + ' ' + document.getElementById('profileLastName').value;
+                    localStorage.setItem('lmsName', newName);
+                    
+                    messageEl.textContent = 'Profile updated successfully!';
+                    messageEl.className = 'alert alert-success';
+                    messageEl.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        messageEl.style.display = 'none';
+                    }, 3000);
+                } else {
+                    throw new Error(data.error || 'Failed to update profile');
+                }
+            } catch (err) {
+                messageEl.textContent = err.message;
+                messageEl.className = 'alert alert-danger';
+                messageEl.style.display = 'block';
+            }
+        });
+
+        // Change password form submission
+        document.getElementById('changePasswordForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('lmsToken');
+            const messageEl = document.getElementById('passwordChangeMessage');
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                messageEl.textContent = 'New passwords do not match!';
+                messageEl.className = 'alert alert-danger';
+                messageEl.style.display = 'block';
+                return;
+            }
+            
+            try {
+                const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
+                const resp = await fetch(API_BASE + '/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token,
+                        currentPassword: document.getElementById('currentPassword').value,
+                        newPassword
+                    })
+                });
+                
+                const data = await resp.json();
+                
+                if (resp.ok) {
+                    messageEl.textContent = 'Password changed successfully!';
+                    messageEl.className = 'alert alert-success';
+                    messageEl.style.display = 'block';
+                    
+                    // Clear form
+                    document.getElementById('changePasswordForm').reset();
+                    
+                    setTimeout(() => {
+                        messageEl.style.display = 'none';
+                        // Collapse the section
+                        const collapseEl = document.getElementById('changePasswordSection');
+                        const bsCollapse = bootstrap.Collapse.getInstance(collapseEl);
+                        if (bsCollapse) bsCollapse.hide();
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || 'Failed to change password');
+                }
+            } catch (err) {
+                messageEl.textContent = err.message;
+                messageEl.className = 'alert alert-danger';
+                messageEl.style.display = 'block';
+            }
+        });
 
         // Smooth scrolling for menu links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {

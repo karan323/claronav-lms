@@ -183,6 +183,7 @@
         if (!res.ok) throw new Error(j.error || 'Login failed');
         localStorage.setItem('lmsToken', j.token);
         localStorage.setItem('lmsName', j.name);
+        localStorage.setItem('lmsEmail', j.email);
         // use relative path to work on GitHub Pages
         window.location.href = 'dashboard.html#home';
       } catch (err) {
