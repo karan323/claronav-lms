@@ -558,8 +558,14 @@
             <div class="hero-carousel">
                 <div class="hero-slide active" id="slide1">
                     <div class="hero-content">
-                        <h1 class="hero-title">Welcome to Advanced Navigation Training</h1>
-                        <p class="hero-subtitle">Master the latest techniques in surgical navigation with our comprehensive, interactive learning platform designed for medical professionals.</p>
+                        <h1 class="hero-title" id="welcomeTitle">Welcome Back!</h1>
+                        <p class="hero-subtitle" id="welcomeSubtitle">Continue your journey in mastering surgical navigation techniques</p>
+                        <div class="hero-stats" style="margin-top: 2rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 2.5rem; font-weight: 700; color: white;" id="totalProgress">0%</div>
+                                <div style="font-size: 0.9rem; opacity: 0.8;">Overall Progress</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="hero-slide" id="slide2">
@@ -980,48 +986,25 @@
         // Menu navigation
         document.getElementById('menuHome').addEventListener('click', (e) => {
             e.preventDefault();
-            document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+            window.location.hash = 'home';
             sideMenu.style.display = 'none';
         });
 
-        // Auth UI handlers
-        const authBtn = document.getElementById('authBtn');
+        // Auth Modal
         const authModal = document.getElementById('authModal');
 
         function updateAuthUI() {
             const token = localStorage.getItem('lmsToken');
             const name = localStorage.getItem('lmsName');
-            const localUser = localStorage.getItem('lmsUser');
             if (token && name) {
-                authBtn.textContent = name + ' (Logout)';
                 authModal.classList.remove('active');
-            } else if (localUser) {
-                try {
-                    const u = JSON.parse(localUser);
-                    authBtn.textContent = (u.name || 'User') + ' (Logout)';
-                    authModal.classList.remove('active');
-                } catch (e) {
-                    authBtn.textContent = 'Logout';
-                }
-            } else {
-                authBtn.textContent = 'Login / Sign up';
+                // Update welcome message
+                const welcomeTitle = document.getElementById('welcomeTitle');
+                const welcomeSubtitle = document.getElementById('welcomeSubtitle');
+                if (welcomeTitle) welcomeTitle.textContent = `Welcome Back, ${name.split(' ')[0]}!`;
+                if (welcomeSubtitle) welcomeSubtitle.textContent = 'Continue your journey in mastering surgical navigation techniques';
             }
         }
-
-        authBtn.addEventListener('click', () => {
-            const token = localStorage.getItem('lmsToken');
-            const localUser = localStorage.getItem('lmsUser');
-            if (token || localUser) {
-                localStorage.removeItem('lmsToken');
-                localStorage.removeItem('lmsName');
-                localStorage.removeItem('lmsUser');
-                updateAuthUI();
-                refreshAuthState();
-                authModal.classList.add('active');
-            } else {
-                window.location.href = 'login.html';
-            }
-        });
 
         // Show auth modal for non-authenticated users trying to access modules
         document.querySelectorAll('.modern-card').forEach(card => {
@@ -1074,6 +1057,16 @@
                 updateProgress('spine', p.spine || 0);
                 updateProgress('ent', p.ent || 0);
 
+                // Calculate and display overall progress
+                const cranialProg = p.cranial || 0;
+                const spineProg = p.spine || 0;
+                const entProg = p.ent || 0;
+                const overallProg = Math.round((cranialProg + spineProg + entProg) / 3);
+                const totalProgressEl = document.getElementById('totalProgress');
+                if (totalProgressEl) {
+                    totalProgressEl.textContent = overallProg + '%';
+                }
+
                 // Load module content
                 loadModuleContents();
 
@@ -1081,6 +1074,7 @@
                 document.querySelectorAll('.not-auth').forEach(el => el.style.display = 'none');
                 updateAuthUI();
             } catch (err) {
+                console.error('Error loading progress:', err);
                 localStorage.removeItem('lmsToken');
                 document.querySelectorAll('.auth-only').forEach(el => el.style.display = 'none');
                 updateAuthUI();
@@ -1144,67 +1138,82 @@
             }
         }
 
-        // Initialize
-        updateAuthUI();
-        refreshAuthState();
-
-        // Initialize dashboard user avatar
-        function initDashboardUserAvatar() {
+        // Initialize dashboard user avatar IMMEDIATELY
+        (function initDashboardUserAvatar() {
             const name = localStorage.getItem('lmsName');
             const email = localStorage.getItem('lmsEmail');
             const dashAvatar = document.getElementById('dashboardUserAvatar');
             const dashDropdown = document.getElementById('dashboardUserDropdown');
             
+            console.log('Initializing avatar with name:', name, 'email:', email);
+            
             if (name && dashAvatar) {
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                document.getElementById('dashboardUserInitials').textContent = initials;
-                document.getElementById('dashDropdownUserName').textContent = name;
-                document.getElementById('dashDropdownUserEmail').textContent = email || '';
+                const initialsEl = document.getElementById('dashboardUserInitials');
+                if (initialsEl) {
+                    initialsEl.textContent = initials;
+                }
+                
+                const nameEl = document.getElementById('dashDropdownUserName');
+                const emailEl = document.getElementById('dashDropdownUserEmail');
+                if (nameEl) nameEl.textContent = name;
+                if (emailEl) emailEl.textContent = email || '';
                 
                 // Check for profile photo
                 const profilePhoto = localStorage.getItem('lmsProfilePhoto');
-                if (profilePhoto) {
-                    document.getElementById('dashboardUserInitials').innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                if (profilePhoto && initialsEl) {
+                    initialsEl.innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
                 }
                 
                 // Toggle dropdown
-                dashAvatar.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    dashDropdown.style.display = dashDropdown.style.display === 'none' ? 'block' : 'none';
-                });
+                if (dashAvatar) {
+                    dashAvatar.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (dashDropdown) {
+                            dashDropdown.style.display = dashDropdown.style.display === 'none' || dashDropdown.style.display === '' ? 'block' : 'none';
+                        }
+                    });
+                }
                 
                 // Close dropdown when clicking outside
                 document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.user-avatar-container')) {
+                    if (dashDropdown && !e.target.closest('.user-avatar-container')) {
                         dashDropdown.style.display = 'none';
                     }
                 });
                 
                 // Dropdown links
-                dashDropdown.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('mouseenter', (e) => {
-                        e.target.style.background = 'var(--light-blue)';
-                        e.target.style.color = 'var(--primary-blue)';
+                if (dashDropdown) {
+                    dashDropdown.querySelectorAll('a').forEach(link => {
+                        link.addEventListener('mouseenter', (e) => {
+                            e.target.style.background = 'var(--light-blue)';
+                            e.target.style.color = 'var(--primary-blue)';
+                        });
+                        link.addEventListener('mouseleave', (e) => {
+                            e.target.style.background = '';
+                            e.target.style.color = 'var(--text-gray)';
+                        });
                     });
-                    link.addEventListener('mouseleave', (e) => {
-                        e.target.style.background = '';
-                        e.target.style.color = 'var(--text-gray)';
-                    });
-                });
+                }
                 
                 // Logout handler
-                document.getElementById('dashLogoutBtn')?.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.removeItem('lmsToken');
-                    localStorage.removeItem('lmsName');
-                    localStorage.removeItem('lmsEmail');
-                    localStorage.removeItem('lmsProfilePhoto');
-                    window.location.href = 'index.html';
-                });
+                const logoutBtn = document.getElementById('dashLogoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem('lmsToken');
+                        localStorage.removeItem('lmsName');
+                        localStorage.removeItem('lmsEmail');
+                        localStorage.removeItem('lmsProfilePhoto');
+                        window.location.href = 'index.html';
+                    });
+                }
             }
-        }
-        
-        initDashboardUserAvatar();
+        })();
+
+        // Initialize
+        updateAuthUI();
+        refreshAuthState();
 
         // Handle URL hash navigation (including profile)
         function handleHashNavigation() {
