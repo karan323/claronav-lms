@@ -532,21 +532,20 @@
                             </ul>
                         </div>
                     </div>
-                    <button id="menuToggle" class="btn btn-outline-light">
+                    <button id="menuToggle" class="btn btn-outline-light" style="display: none;">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Side Menu -->
-        <div id="sideMenu" class="position-absolute" style="display: none; right: 20px; top: 80px;">
+        <!-- Side Menu (hidden by default) -->
+        <div id="sideMenu" class="position-absolute" style="display: none; right: 20px; top: 80px; z-index: 1000;">
             <div class="card" style="width: 200px;">
                 <div class="list-group list-group-flush">
                     <a href="#home" id="menuHome" class="list-group-item list-group-item-action">Home</a>
                     <a href="#modules" class="list-group-item list-group-item-action">Modules</a>
-                    <a href="#about" class="list-group-item list-group-item-action">About</a>
-                    <a href="#support" class="list-group-item list-group-item-action">Support</a>
+                </div>
                 </div>
             </div>
         </div>
@@ -907,8 +906,9 @@
 
         function showSlide(index) {
             slides.forEach(slide => slide.classList.remove('active'));
-            slides[index].classList.add('active');
-            animateStats(index);
+            if (slides[index]) {
+                slides[index].classList.add('active');
+            }
         }
 
         function nextSlide() {
@@ -916,38 +916,9 @@
             showSlide(currentSlide);
         }
 
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            showSlide(currentSlide);
-        }
-
-        document.getElementById('nextSlide').addEventListener('click', nextSlide);
-        document.getElementById('prevSlide').addEventListener('click', prevSlide);
-
-        // Auto slide change every 5 seconds
-        setInterval(nextSlide, 5000);
-
-        // Animated statistics counters
-        function animateStats(slideIndex) {
-            const stats = slides[slideIndex].querySelectorAll('.stat-number');
-            stats.forEach(stat => {
-                const target = parseInt(stat.getAttribute('data-target'));
-                animateCounter(stat, 0, target, 2000);
-            });
-        }
-
-        function animateCounter(element, start, end, duration) {
-            const startTime = performance.now();
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const current = Math.floor(start + (end - start) * progress);
-                element.textContent = current;
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                }
-            }
-            requestAnimationFrame(update);
+        // Auto slide change every 6 seconds
+        if (totalSlides > 1) {
+            setInterval(nextSlide, 6000);
         }
 
         // Initialize first slide stats
