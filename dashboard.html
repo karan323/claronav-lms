@@ -765,15 +765,15 @@
     </section>
 
     <!-- Profile Section -->
-    <section class="profile-section auth-only" id="profile" style="display: none; padding: 4rem 0; min-height: 100vh;">
+    <section class="profile-section auth-only" id="profile" style="display: none; padding: 6rem 2rem 4rem; min-height: calc(100vh - 80px);">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
-                    <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+                    <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden; background: white;">
                         <div class="card-header text-center" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%); color: white; padding: 2rem;">
                             <h2 class="mb-0"><i class="fas fa-user-circle me-2"></i>My Profile</h2>
                         </div>
-                        <div class="card-body p-4">
+                        <div class="card-body p-4" style="background: white;">
                             <!-- Profile Photo Section -->
                             <div class="text-center mb-4">
                                 <div class="profile-photo-container" style="position: relative; display: inline-block;">
@@ -1190,10 +1190,14 @@
         function handleHashNavigation() {
             const hash = window.location.hash.substring(1); // Remove #
             
-            // Hide all sections first
+            // Hide content sections (but NOT the header)
             document.querySelectorAll('.hero-section, .interactive-cards, .module-content, .profile-section').forEach(el => {
                 el.style.display = 'none';
             });
+            
+            // Ensure header is always visible
+            const header = document.getElementById('modernHeader');
+            if (header) header.style.display = 'block';
             
             if (hash === 'profile') {
                 document.getElementById('profile').style.display = 'block';
