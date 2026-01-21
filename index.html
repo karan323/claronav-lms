@@ -830,8 +830,8 @@
             }
         }
 
-        // Attach training link handler to all training links
-        document.querySelectorAll('a[href="login.html"]').forEach(link => {
+        // Attach training link handler only to "Start Learning" CTA buttons, not login/signup nav links
+        document.querySelectorAll('a.cta-button[href="login.html"]').forEach(link => {
             link.addEventListener('click', handleTrainingLink);
         });
     </script>

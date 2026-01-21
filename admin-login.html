@@ -90,7 +90,7 @@
     </div>
 
     <script>
-        const API_BASE = localStorage.getItem('API_BASE') || 'https://claronav-lms.onrender.com';
+        const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
         
         document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
