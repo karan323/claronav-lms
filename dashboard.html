@@ -1138,11 +1138,14 @@
                 
                 // Toggle dropdown with better event handling
                 if (dashAvatar && dashDropdown) {
-                    // Remove any existing listeners
+                    // Remove any existing listeners by cloning
                     const newDashAvatar = dashAvatar.cloneNode(true);
                     dashAvatar.parentNode.replaceChild(newDashAvatar, dashAvatar);
                     
-                    newDashAvatar.addEventListener('click', (e) => {
+                    // Get the new reference to the replaced element
+                    const avatarElement = document.getElementById('dashboardUserAvatar');
+                    
+                    avatarElement.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         console.log('Avatar clicked! Current display:', dashDropdown.style.display);
@@ -1151,14 +1154,14 @@
                         console.log('New display:', dashDropdown.style.display);
                     });
                     
-                    console.log('Avatar click handler attached');
+                    console.log('Avatar click handler attached successfully');
                 }
                 
                 // Close dropdown when clicking outside
                 document.addEventListener('click', (e) => {
                     if (dashDropdown && !e.target.closest('.user-avatar-container')) {
                         dashDropdown.style.display = 'none';
-                    }}
+                    }
                 });
                 
                 // Dropdown links hover effects
