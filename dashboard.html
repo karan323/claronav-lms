@@ -81,8 +81,7 @@
 
         /* Header */
         .modern-header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             padding: 1rem 0;
             position: fixed;
@@ -90,11 +89,12 @@
             width: 100%;
             z-index: 1000;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .modern-header.scrolled {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: var(--shadow);
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .logo-container {
@@ -121,11 +121,6 @@
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.8);
             margin: 0;
-        }
-
-        .modern-header.scrolled .brand-text h1,
-        .modern-header.scrolled .brand-text p {
-            color: var(--text-primary);
         }
 
         /* Hero Section */
@@ -1116,13 +1111,18 @@
             const dashAvatar = document.getElementById('dashboardUserAvatar');
             const dashDropdown = document.getElementById('dashboardUserDropdown');
             
-            console.log('Initializing avatar with name:', name, 'email:', email);
+            console.log('Initializing dashboard avatar - Name:', name, 'Email:', email);
+            console.log('Avatar element:', dashAvatar);
+            console.log('Dropdown element:', dashDropdown);
             
-            if (name && dashAvatar) {
+            if (name) {
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
                 const initialsEl = document.getElementById('dashboardUserInitials');
                 if (initialsEl) {
                     initialsEl.textContent = initials;
+                    console.log('Set initials to:', initials);
+                } else {
+                    console.error('initialsEl not found!');
                 }
                 
                 const nameEl = document.getElementById('dashDropdownUserName');
@@ -1136,33 +1136,41 @@
                     initialsEl.innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
                 }
                 
-                // Toggle dropdown
-                if (dashAvatar) {
-                    dashAvatar.addEventListener('click', (e) => {
+                // Toggle dropdown with better event handling
+                if (dashAvatar && dashDropdown) {
+                    // Remove any existing listeners
+                    const newDashAvatar = dashAvatar.cloneNode(true);
+                    dashAvatar.parentNode.replaceChild(newDashAvatar, dashAvatar);
+                    
+                    newDashAvatar.addEventListener('click', (e) => {
+                        e.preventDefault();
                         e.stopPropagation();
-                        if (dashDropdown) {
-                            dashDropdown.style.display = dashDropdown.style.display === 'none' || dashDropdown.style.display === '' ? 'block' : 'none';
-                        }
+                        console.log('Avatar clicked! Current display:', dashDropdown.style.display);
+                        const isVisible = dashDropdown.style.display === 'block';
+                        dashDropdown.style.display = isVisible ? 'none' : 'block';
+                        console.log('New display:', dashDropdown.style.display);
                     });
+                    
+                    console.log('Avatar click handler attached');
                 }
                 
                 // Close dropdown when clicking outside
                 document.addEventListener('click', (e) => {
                     if (dashDropdown && !e.target.closest('.user-avatar-container')) {
                         dashDropdown.style.display = 'none';
-                    }
+                    }}
                 });
                 
-                // Dropdown links
+                // Dropdown links hover effects
                 if (dashDropdown) {
                     dashDropdown.querySelectorAll('a').forEach(link => {
                         link.addEventListener('mouseenter', (e) => {
-                            e.target.style.background = 'var(--light-blue)';
-                            e.target.style.color = 'var(--primary-blue)';
+                            e.target.style.background = '#E6F2FF';
+                            e.target.style.color = '#0066CC';
                         });
                         link.addEventListener('mouseleave', (e) => {
                             e.target.style.background = '';
-                            e.target.style.color = 'var(--text-gray)';
+                            e.target.style.color = '#555555';
                         });
                     });
                 }
@@ -1179,6 +1187,8 @@
                         window.location.href = 'index.html';
                     });
                 }
+            } else {
+                console.error('No user name found in localStorage!');
             }
         })();
 
