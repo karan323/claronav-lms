@@ -473,98 +473,96 @@
             }
         }
 
-        /* Side Menu Styles */
-        .side-menu {
-            position: fixed;
-            left: 0;
-            top: 80px;
-            width: 250px;
-            height: calc(100vh - 80px);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(230, 242, 255, 0.98) 100%);
-            box-shadow: 4px 0 20px rgba(0, 102, 204, 0.3);
-            z-index: 999;
-            padding: 2rem 0;
-            overflow-y: auto;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
+        /* User Avatar and Dropdown */
+        .user-avatar {
+            cursor: pointer;
+            position: relative;
         }
 
-        .side-menu.active {
-            transform: translateX(0);
+        .user-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            min-width: 250px;
+            display: none;
+            z-index: 1001;
+            overflow: hidden;
+            animation: dropdownFadeIn 0.3s ease;
         }
 
-        .side-menu-item {
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-dropdown.active {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .dropdown-header h6 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .dropdown-header p {
+            margin: 0.25rem 0 0 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .dropdown-menu-list {
+            list-style: none;
+            padding: 0.5rem 0;
+            margin: 0;
+        }
+
+        .dropdown-menu-item {
             display: flex;
             align-items: center;
             gap: 1rem;
             padding: 1rem 1.5rem;
             color: var(--text-primary);
             text-decoration: none;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
-        .side-menu-item:hover {
-            background: rgba(0, 102, 204, 0.1);
-            border-left-color: var(--primary-blue);
+        .dropdown-menu-item:hover {
+            background: var(--light-blue);
             color: var(--primary-blue);
         }
 
-        .side-menu-item i {
-            width: 24px;
-            font-size: 1.2rem;
+        .dropdown-menu-item i {
+            width: 20px;
+            font-size: 1.1rem;
         }
 
-        .side-menu-divider {
+        .dropdown-divider {
             height: 1px;
-            background: rgba(0, 102, 204, 0.2);
-            margin: 1rem 0;
+            background: #E0E0E0;
+            margin: 0.5rem 0;
         }
 
         .main-content {
             margin-left: 0;
             transition: margin-left 0.3s ease;
-        }
-
-        /* Header Menu Toggle Button */
-        .header-menu-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .header-menu-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-        }
-
-        /* Menu Overlay */
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 998;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
         }
 
         /* Auth visibility helpers */
@@ -601,52 +599,45 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <button class="header-menu-btn auth-only" id="headerMenuToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="user-avatar-container" style="position: relative;">
-                        <div class="user-avatar" id="dashboardUserAvatar" style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 3px solid rgba(255, 255, 255, 0.3);">
-                            <span id="dashboardUserInitials"></span>
+                    <div class="user-avatar-container auth-only" style="position: relative;">
+                        <div class="user-avatar" id="dashboardUserAvatar" style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 3px solid rgba(255, 255, 255, 0.3); cursor: pointer; transition: all 0.3s ease;">
+                            <span id="dashboardUserInitials" style="font-size: 1.2rem;"></span>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="dropdown-header">
+                                <h6 id="dropdownUserName">User Name</h6>
+                                <p id="dropdownUserEmail">user@email.com</p>
+                            </div>
+                            <ul class="dropdown-menu-list">
+                                <li class="dropdown-menu-item" data-action="cranial">
+                                    <i class="fas fa-brain"></i>
+                                    <span>Cranial</span>
+                                </li>
+                                <li class="dropdown-menu-item" data-action="spine">
+                                    <i class="fas fa-user-injured"></i>
+                                    <span>Spine</span>
+                                </li>
+                                <li class="dropdown-menu-item" data-action="ent">
+                                    <i class="fas fa-stethoscope"></i>
+                                    <span>ENT</span>
+                                </li>
+                                <div class="dropdown-divider"></div>
+                                <li class="dropdown-menu-item" data-action="profile">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>Profile</span>
+                                </li>
+                                <div class="dropdown-divider"></div>
+                                <li class="dropdown-menu-item" data-action="logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Logout</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </header>
-
-    <!-- Menu Overlay -->
-    <div class="menu-overlay" id="menuOverlay"></div>
-
-    <!-- Side Menu -->
-    <aside class="side-menu auth-only" id="sideMenu">
-        <div class="side-menu-item" data-section="home">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </div>
-        <div class="side-menu-divider"></div>
-        <div class="side-menu-item" data-section="cranial">
-            <i class="fas fa-brain"></i>
-            <span>Cranial</span>
-        </div>
-        <div class="side-menu-item" data-section="spine">
-            <i class="fas fa-user-injured"></i>
-            <span>Spine</span>
-        </div>
-        <div class="side-menu-item" data-section="ent">
-            <i class="fas fa-stethoscope"></i>
-            <span>ENT</span>
-        </div>
-        <div class="side-menu-divider"></div>
-        <div class="side-menu-item" data-section="profile">
-            <i class="fas fa-user-circle"></i>
-            <span>Profile</span>
-        </div>
-        <div class="side-menu-divider"></div>
-        <div class="side-menu-item" id="sideMenuLogout">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
-        </div>
-    </aside>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -863,99 +854,6 @@
         </div>
     </section>
 
-    <!-- Profile Section -->
-    <section class="profile-section auth-only content-section" id="profile" style="display: none; padding: 6rem 2rem 4rem; min-height: calc(100vh - 80px); background: rgba(255, 255, 255, 0.05);">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden; background: white;">
-                        <div class="card-header text-center" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%); color: white; padding: 2rem;">
-                            <h2 class="mb-0"><i class="fas fa-user-circle me-2"></i>My Profile</h2>
-                        </div>
-                        <div class="card-body p-4" style="background: white;">
-                            <!-- Profile Photo Section -->
-                            <div class="text-center mb-4">
-                                <div class="profile-photo-container" style="position: relative; display: inline-block;">
-                                    <div id="profilePhotoDisplay" style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal)); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; font-weight: 700; margin: 0 auto; border: 5px solid #E6F2FF; box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);">
-                                        <span id="profileInitials"></span>
-                                    </div>
-                                    <label for="profilePhotoInput" class="btn btn-primary btn-sm" style="position: absolute; bottom: 10px; right: -10px; border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                                        <i class="fas fa-camera"></i>
-                                    </label>
-                                    <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
-                                </div>
-                                <p class="mt-2 text-muted" style="font-size: 0.85rem;">Click camera icon to change photo</p>
-                            </div>
-
-                            <!-- Profile Form -->
-                            <form id="profileForm">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold"><i class="fas fa-user me-2"></i>First Name</label>
-                                        <input type="text" class="form-control" id="profileFirstName" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold"><i class="fas fa-user me-2"></i>Last Name</label>
-                                        <input type="text" class="form-control" id="profileLastName" required>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold"><i class="fas fa-envelope me-2"></i>Email Address</label>
-                                    <input type="email" class="form-control" id="profileEmail" readonly style="background-color: #f5f5f5;">
-                                    <small class="text-muted">Email cannot be changed</small>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold"><i class="fas fa-barcode me-2"></i>System Serial Number</label>
-                                    <input type="text" class="form-control" id="profileSerial" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold"><i class="fas fa-hospital me-2"></i>Hospital Name</label>
-                                    <input type="text" class="form-control" id="profileHospital" required>
-                                </div>
-                                <div id="profileUpdateMessage" class="alert" style="display: none;"></div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-2"></i>Save Changes
-                                    </button>
-                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#changePasswordSection">
-                                        <i class="fas fa-key me-2"></i>Change Password
-                                    </button>
-                                </div>
-                            </form>
-
-                            <!-- Change Password Section -->
-                            <div class="collapse mt-4" id="changePasswordSection">
-                                <div class="card" style="background-color: #f8f9fa; border-radius: 15px;">
-                                    <div class="card-body">
-                                        <h5 class="card-title mb-3"><i class="fas fa-lock me-2"></i>Change Password</h5>
-                                        <form id="changePasswordForm">
-                                            <div class="mb-3">
-                                                <label class="form-label">Current Password</label>
-                                                <input type="password" class="form-control" id="currentPassword" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">New Password</label>
-                                                <input type="password" class="form-control" id="newPassword" required minlength="6">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Confirm New Password</label>
-                                                <input type="password" class="form-control" id="confirmPassword" required>
-                                            </div>
-                                            <div id="passwordChangeMessage" class="alert" style="display: none;"></div>
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-check me-2"></i>Update Password
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     </div><!-- End Main Content -->
 
     <!-- Auth Modal -->
@@ -1041,75 +939,55 @@
             });
         });
 
-        // Side Menu Navigation
-        const sideMenu = document.getElementById('sideMenu');
-        const headerMenuToggle = document.getElementById('headerMenuToggle');
-        const menuOverlay = document.getElementById('menuOverlay');
-        const menuItems = document.querySelectorAll('.side-menu-item[data-section]');
+        // User Dropdown Menu
+        const userAvatar = document.getElementById('dashboardUserAvatar');
+        const userDropdown = document.getElementById('userDropdown');
+        const dropdownItems = document.querySelectorAll('.dropdown-menu-item');
 
-        // Toggle menu with header button
-        if (headerMenuToggle) {
-            headerMenuToggle.addEventListener('click', (e) => {
+        // Toggle dropdown when clicking avatar
+        if (userAvatar) {
+            userAvatar.addEventListener('click', (e) => {
                 e.stopPropagation();
-                sideMenu.classList.toggle('active');
-                menuOverlay.classList.toggle('active');
+                userDropdown.classList.toggle('active');
             });
         }
 
-        // Close menu when clicking overlay
-        if (menuOverlay) {
-            menuOverlay.addEventListener('click', () => {
-                sideMenu.classList.remove('active');
-                menuOverlay.classList.remove('active');
-            });
-        }
-
-        // Handle side menu navigation
-        menuItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const section = item.getAttribute('data-section');
-                
-                // Hide all content sections
-                document.querySelectorAll('.content-section').forEach(sec => {
-                    sec.style.display = 'none';
-                });
-                
-                // Show the selected section
-                if (section === 'home') {
-                    document.querySelector('.hero-section').style.display = 'flex';
-                    document.querySelector('.interactive-cards').style.display = 'block';
-                    document.getElementById('modules').style.display = 'block';
-                } else if (section === 'cranial' || section === 'spine' || section === 'ent') {
-                    document.getElementById('modules').style.display = 'block';
-                    // Switch to the correct tab
-                    const tabBtn = document.querySelector(`.tab-btn[data-tab="${section}"]`);
-                    if (tabBtn) tabBtn.click();
-                    // Scroll to modules section
-                    document.getElementById('modules').scrollIntoView({ behavior: 'smooth' });
-                } else if (section === 'profile') {
-                    document.getElementById('profile').style.display = 'block';
-                    loadProfileData();
-                    // Scroll to top
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-                
-                // Close menu after navigation
-                sideMenu.classList.remove('active');
-                menuOverlay.classList.remove('active');
-            });
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (userDropdown && !e.target.closest('.user-avatar-container')) {
+                userDropdown.classList.remove('active');
+            }
         });
 
-        // Logout from side menu
-        document.getElementById('sideMenuLogout')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('lmsToken');
-            localStorage.removeItem('lmsName');
-            localStorage.removeItem('lmsEmail');
-            localStorage.removeItem('lmsProfilePhoto');
-            localStorage.removeItem('lmsSerial');
-            localStorage.removeItem('lmsHospital');
-            window.location.href = 'index.html';
+        // Handle dropdown menu actions
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const action = item.getAttribute('data-action');
+                
+                // Close dropdown
+                userDropdown.classList.remove('active');
+                
+                if (action === 'cranial' || action === 'spine' || action === 'ent') {
+                    // Navigate to modules section and switch tab
+                    document.getElementById('modules').style.display = 'block';
+                    const tabBtn = document.querySelector(`.tab-btn[data-tab="${action}"]`);
+                    if (tabBtn) tabBtn.click();
+                    document.getElementById('modules').scrollIntoView({ behavior: 'smooth' });
+                } else if (action === 'profile') {
+                    // Open profile in new window
+                    window.open('profile.html', '_blank');
+                } else if (action === 'logout') {
+                    // Logout
+                    localStorage.removeItem('lmsToken');
+                    localStorage.removeItem('lmsName');
+                    localStorage.removeItem('lmsEmail');
+                    localStorage.removeItem('lmsProfilePhoto');
+                    localStorage.removeItem('lmsSerial');
+                    localStorage.removeItem('lmsHospital');
+                    window.location.href = 'index.html';
+                }
+            });
         });
 
         // Auth Modal
@@ -1279,6 +1157,12 @@
                     console.error('initialsEl not found!');
                 }
                 
+                // Update dropdown header
+                const dropdownName = document.getElementById('dropdownUserName');
+                const dropdownEmail = document.getElementById('dropdownUserEmail');
+                if (dropdownName) dropdownName.textContent = name;
+                if (dropdownEmail) dropdownEmail.textContent = email || '';
+                
                 // Check for profile photo
                 const profilePhoto = localStorage.getItem('lmsProfilePhoto');
                 if (profilePhoto && initialsEl) {
@@ -1293,18 +1177,12 @@
         updateAuthUI();
         refreshAuthState();
         
-        // Load profile data when user is authenticated
-        if (localStorage.getItem('lmsToken')) {
-            loadProfileData();
-        }
-        
         // Show home sections by default
         document.querySelector('.hero-section').style.display = 'flex';
         document.querySelector('.interactive-cards').style.display = 'block';
         document.getElementById('modules').style.display = 'block';
-        document.getElementById('profile').style.display = 'none';
 
-        // Profile functionality
+        // Profile functionality (for separate profile page)
         async function loadProfileData() {
             const token = localStorage.getItem('lmsToken');
             const name = localStorage.getItem('lmsName');

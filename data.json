@@ -1,5 +1,16 @@
 {
-  "users": {},
-  "sessions": {},
+  "users": {
+    "karan@claronav.com": {
+      "email": "karan@claronav.com",
+      "firstName": "Karan",
+      "lastName": "Mistry",
+      "serial": "NC-2411",
+      "hospital": "Huber river",
+      "password": "M33@karan"
+    }
+  },
+  "sessions": {
+    "201e6596b6167a5d094e764fa6efec21": "karan@claronav.com"
+  },
   "progress": {}
 }
