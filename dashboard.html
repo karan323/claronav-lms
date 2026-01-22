@@ -527,34 +527,25 @@
             transition: margin-left 0.3s ease;
         }
 
-        /* Menu Toggle Button */
-        .menu-toggle-btn {
-            position: fixed;
-            left: 15px;
-            top: 95px;
-            width: 50px;
-            height: 50px;
+        /* Header Menu Toggle Button */
+        .header-menu-btn {
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
-            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
             transition: all 0.3s ease;
         }
 
-        .menu-toggle-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
-        }
-
-        .menu-toggle-btn.active {
-            left: 265px;
+        .header-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
         }
 
         /* Menu Overlay */
@@ -610,23 +601,18 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-3">
+                    <button class="header-menu-btn auth-only" id="headerMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
                     <div class="user-avatar-container" style="position: relative;">
                         <div class="user-avatar" id="dashboardUserAvatar" style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 3px solid rgba(255, 255, 255, 0.3);">
                             <span id="dashboardUserInitials"></span>
                         </div>
                     </div>
-                    <button id="menuToggle" class="btn btn-outline-light d-none">
-                        <i class="fas fa-bars"></i>
-                    </button>
                 </div>
             </div>
         </div>
     </header>
-
-    <!-- Menu Toggle Button -->
-    <button class="menu-toggle-btn auth-only" id="floatingMenuToggle">
-        <i class="fas fa-bars"></i>
-    </button>
 
     <!-- Menu Overlay -->
     <div class="menu-overlay" id="menuOverlay"></div>
@@ -1057,17 +1043,16 @@
 
         // Side Menu Navigation
         const sideMenu = document.getElementById('sideMenu');
-        const floatingMenuToggle = document.getElementById('floatingMenuToggle');
+        const headerMenuToggle = document.getElementById('headerMenuToggle');
         const menuOverlay = document.getElementById('menuOverlay');
         const menuItems = document.querySelectorAll('.side-menu-item[data-section]');
 
-        // Toggle menu with floating button
-        if (floatingMenuToggle) {
-            floatingMenuToggle.addEventListener('click', (e) => {
+        // Toggle menu with header button
+        if (headerMenuToggle) {
+            headerMenuToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
                 sideMenu.classList.toggle('active');
                 menuOverlay.classList.toggle('active');
-                floatingMenuToggle.classList.toggle('active');
             });
         }
 
@@ -1076,7 +1061,6 @@
             menuOverlay.addEventListener('click', () => {
                 sideMenu.classList.remove('active');
                 menuOverlay.classList.remove('active');
-                floatingMenuToggle.classList.remove('active');
             });
         }
 
@@ -1113,9 +1097,6 @@
                 // Close menu after navigation
                 sideMenu.classList.remove('active');
                 menuOverlay.classList.remove('active');
-                if (floatingMenuToggle) {
-                    floatingMenuToggle.classList.remove('active');
-                }
             });
         });
 
