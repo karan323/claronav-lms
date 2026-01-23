@@ -1355,6 +1355,16 @@
                 }
             });
         });
+
+        // Automatic logout when window/tab is closed
+        window.addEventListener('beforeunload', function(e) {
+            localStorage.removeItem('lmsToken');
+            localStorage.removeItem('lmsName');
+            localStorage.removeItem('lmsEmail');
+            localStorage.removeItem('lmsProfilePhoto');
+            localStorage.removeItem('lmsSerial');
+            localStorage.removeItem('lmsHospital');
+        });
     </script>
 </body>
 </html>
