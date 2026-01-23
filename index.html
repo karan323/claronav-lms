@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navient - Advanced Surgical Navigation System | Claronav</title>
+    <script>
+        // Authentication check - redirect authenticated users to dashboard
+        (function() {
+            const token = localStorage.getItem('lmsToken');
+            if (token) {
+                window.location.replace('dashboard.html');
+            }
+        })();
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
@@ -727,26 +736,8 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#footer">Contact Us</a>
                     </li>
-                    <li class="nav-item" id="authNavItem">
-                        <a href="login.html" class="btn btn-nav ms-2" id="loginBtn">Login / Sign up</a>
-                        <div class="user-avatar" id="userAvatar" style="display: none;">
-                            <span id="userInitials"></span>
-                        </div>
-                        <div class="user-dropdown" id="userDropdown">
-                            <div class="user-dropdown-header">
-                                <h6 id="dropdownUserName">User Name</h6>
-                                <p id="dropdownUserEmail" style="font-size: 0.75rem;">user@email.com</p>
-                            </div>
-                            <ul class="user-dropdown-menu">
-                                <li><a href="dashboard.html#cranial"><i class="fas fa-brain"></i> Cranial</a></li>
-                                <li><a href="dashboard.html#ent"><i class="fas fa-stethoscope"></i> ENT</a></li>
-                                <li><a href="dashboard.html#spine"><i class="fas fa-user-injured"></i> Spine</a></li>
-                                <div class="dropdown-divider"></div>
-                                <li><a href="dashboard.html#profile"><i class="fas fa-user-circle"></i> Profile</a></li>
-                                <div class="dropdown-divider"></div>
-                                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                            </ul>
-                        </div>
+                    <li class="nav-item">
+                        <a href="login.html" class="btn btn-nav ms-2">Login / Sign up</a>
                     </li>
                 </ul>
             </div>

@@ -869,19 +869,18 @@
     </div>
 
     <script>
-        // Check authentication - redirect to login if not authenticated
-        try {
+        // Authentication check - redirect to login if not authenticated
+        (function() {
             const hasToken = !!localStorage.getItem('lmsToken');
             const hasLocal = !!localStorage.getItem('lmsUser');
             
-            // Redirect to login page if not authenticated
             if (!hasToken && !hasLocal) {
-                window.location.href = 'login.html';
+                window.location.replace('login.html');
             }
             
             if (hasToken || hasLocal) document.documentElement.classList.add('lms-logged-in');
             else document.documentElement.classList.remove('lms-logged-in');
-        } catch (e) { /* ignore */ }
+        })();
     </script>
 
     <!-- Bootstrap JS -->
