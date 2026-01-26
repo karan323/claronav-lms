@@ -1288,23 +1288,6 @@
             });
         });
 
-        // Function to initialize the rest of the page
-        function initializePage() {
-            console.log('Initializing page features...');
-            
-            // Header scroll effect
-            window.addEventListener('scroll', () => {
-                    localStorage.removeItem('lmsToken');
-                    localStorage.removeItem('lmsName');
-                    localStorage.removeItem('lmsEmail');
-                    localStorage.removeItem('lmsProfilePhoto');
-                    localStorage.removeItem('lmsSerial');
-                    localStorage.removeItem('lmsHospital');
-                    window.location.href = 'index.html';
-                }
-            });
-        });
-
         // Auth Modal
         const authModal = document.getElementById('authModal');
 
