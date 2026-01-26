@@ -3,8 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claronav LMS - Advanced Training Platform</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Claronav LMS - Advanced Training Platform v2.1</title>
     <script>
+        // Version Check & Cache Clear
+        const CURRENT_VERSION = '2.1';
+        const lastVersion = localStorage.getItem('dashboardVersion');
+        if (lastVersion !== CURRENT_VERSION) {
+            console.log('🔄 New version detected! Clearing cache...');
+            localStorage.setItem('dashboardVersion', CURRENT_VERSION);
+            // Force reload once to clear cache
+            if (!sessionStorage.getItem('reloaded')) {
+                sessionStorage.setItem('reloaded', 'true');
+                window.location.reload(true);
+            }
+        }
+        
         // Redirect to login if not authenticated
         (function() {
             const token = localStorage.getItem('lmsToken');
