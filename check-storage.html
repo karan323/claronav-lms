@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #0066CC; }
+        .data-item {
+            padding: 10px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-left: 4px solid #0066CC;
+            font-family: monospace;
+        }
+        .missing {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .present {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            background: #0066CC;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background: #004499; }
+        .danger { background: #dc3545; }
+        .danger:hover { background: #c82333; }
+        .success { background: #28a745; }
+        .success:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 LocalStorage Checker</h1>
+        <p>This page helps you diagnose why the avatar is showing "--" instead of initials.</p>
+        
+        <button onclick="checkStorage()">🔄 Refresh Check</button>
+        <button onclick="fixMissingData()" class="success">🔧 Try to Fix Missing Data</button>
+        <button onclick="clearAll()" class="danger">🗑️ Clear All Data</button>
+        <button onclick="goToDashboard()" class="success">→ Go to Dashboard</button>
+        
+        <h2>Required Data for Avatar:</h2>
+        <div id="results"></div>
+        
+        <h2>All LocalStorage Keys:</h2>
+        <div id="allKeys"></div>
+        
+        <h2>Instructions:</h2>
+        <ol>
+            <li><strong>If lmsName is missing:</strong> You need to log in again</li>
+            <li><strong>If lmsToken is missing:</strong> You need to log in again</li>
+            <li>Click "Try to Fix Missing Data" if you see your name somewhere but lmsName is empty</li>
+            <li>After logging in, come back here and click "Refresh Check"</li>
+        </ol>
+    </div>
+
+    <script>
+        function checkStorage() {
+            const requiredKeys = ['lmsToken', 'lmsName', 'lmsEmail'];
+            const optional = ['lmsSerial', 'lmsHospital', 'lmsProfilePhoto', 'lmsUser'];
+            
+            let html = '';
+            
+            // Check required keys
+            requiredKeys.forEach(key => {
+                const value = localStorage.getItem(key);
+                const status = value ? 'present' : 'missing';
+                const icon = value ? '✅' : '❌';
+                html += `<div class="data-item ${status}">
+                    ${icon} <strong>${key}:</strong> ${value || '(MISSING - This is why avatar shows "--")'}<br>
+                    ${value && key === 'lmsName' ? `<small>Initials will be: ${getInitials(value)}</small>` : ''}
+                </div>`;
+            });
+            
+            document.getElementById('results').innerHTML = html;
+            
+            // Show all keys
+            let allHtml = '<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;">';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                allHtml += `<div style="margin: 5px 0; font-family: monospace; font-size: 12px;">
+                    <strong>${key}:</strong> ${value.length > 100 ? value.substring(0, 100) + '...' : value}
+                </div>`;
+            }
+            allHtml += '</div>';
+            document.getElementById('allKeys').innerHTML = allHtml || '<p>No data in localStorage</p>';
+        }
+        
+        function getInitials(name) {
+            if (!name) return '??';
+            const parts = name.trim().split(' ');
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            } else if (parts[0].length >= 2) {
+                return parts[0].substring(0, 2).toUpperCase();
+            }
+            return '??';
+        }
+        
+        function fixMissingData() {
+            // Try to find user data in various places
+            const user = localStorage.getItem('lmsUser');
+            
+            if (user) {
+                try {
+                    const parsed = JSON.parse(user);
+                    if (parsed.name && !localStorage.getItem('lmsName')) {
+                        localStorage.setItem('lmsName', parsed.name);
+                        alert('✅ Found name in lmsUser and set it to lmsName!');
+                    }
+                    if (parsed.email && !localStorage.getItem('lmsEmail')) {
+                        localStorage.setItem('lmsEmail', parsed.email);
+                        alert('✅ Found email in lmsUser and set it to lmsEmail!');
+                    }
+                } catch(e) {
+                    console.error('Could not parse lmsUser:', e);
+                }
+            }
+            
+            // Prompt for manual entry if still missing
+            if (!localStorage.getItem('lmsName')) {
+                const name = prompt('Enter your full name (First Last):');
+                if (name) {
+                    localStorage.setItem('lmsName', name);
+                    alert('✅ Name saved! Initials will be: ' + getInitials(name));
+                }
+            }
+            
+            if (!localStorage.getItem('lmsEmail')) {
+                const email = prompt('Enter your email:');
+                if (email) {
+                    localStorage.setItem('lmsEmail', email);
+                    alert('✅ Email saved!');
+                }
+            }
+            
+            if (!localStorage.getItem('lmsToken')) {
+                localStorage.setItem('lmsToken', 'manual-token-' + Date.now());
+                alert('✅ Created temporary token!');
+            }
+            
+            checkStorage();
+        }
+        
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all data? You will need to log in again.')) {
+                localStorage.clear();
+                alert('🗑️ All data cleared!');
+                checkStorage();
+            }
+        }
+        
+        function goToDashboard() {
+            const hasName = !!localStorage.getItem('lmsName');
+            const hasToken = !!localStorage.getItem('lmsToken');
+            
+            if (!hasName || !hasToken) {
+                alert('⚠️ Missing required data! Please log in first or click "Try to Fix Missing Data"');
+                return;
+            }
+            
+            window.location.href = 'dashboard.html';
+        }
+        
+        // Run check on page load
+        window.addEventListener('load', checkStorage);
+    </script>
+</body>
+</html>
