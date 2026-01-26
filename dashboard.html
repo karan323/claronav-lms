@@ -578,6 +578,20 @@
         .auth-only { display: none !important; }
         .not-auth { display: block; }
         .lms-logged-in .auth-only { display: block !important; }
+        
+        /* User Avatar Container - Always visible when logged in */
+        .user-avatar-container.auth-only {
+            display: flex !important;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+        }
+        
+        .user-avatar:active {
+            transform: scale(0.98);
+        }
         .lms-logged-in .not-auth { display: none !important; }
     </style>
 </head>
@@ -608,34 +622,33 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="user-avatar-container auth-only" style="position: relative;">
-                        <div class="user-avatar" id="dashboardUserAvatar" style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 3px solid rgba(255, 255, 255, 0.3); cursor: pointer; transition: all 0.3s ease;">
-                            <span id="dashboardUserInitials" style="font-size: 1.2rem;"></span>
+                    <div class="user-avatar-container auth-only" style="position: relative; display: flex !important;">
+                        <div class="user-avatar" id="dashboardUserAvatar" style="width: 55px; height: 55px; border-radius: 50%; background: linear-gradient(135deg, #0066CC, #00A8B5); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.3rem; border: 3px solid rgba(255, 255, 255, 0.5); cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+                            <span id="dashboardUserInitials" style="font-size: 1.3rem; letter-spacing: 1px;"></span>
                         </div>
                         <div class="user-dropdown" id="userDropdown">
                             <div class="dropdown-header">
-                                <h6 id="dropdownUserName">User Name</h6>
-                                <p id="dropdownUserEmail">user@email.com</p>
+                                <h6 id="dropdownUserName" style="margin: 0; font-weight: 600; font-size: 1.1rem;">User Name</h6>
+                                <p id="dropdownUserEmail" style="margin: 0.25rem 0 0 0; font-size: 0.85rem; opacity: 0.9;">user@email.com</p>
                             </div>
                             <ul class="dropdown-menu-list">
                                 <li class="dropdown-menu-item" data-action="cranial">
                                     <i class="fas fa-brain"></i>
                                     <span>Cranial</span>
                                 </li>
-                                <li class="dropdown-menu-item" data-action="spine">
-                                    <i class="fas fa-user-injured"></i>
-                                    <span>Spine</span>
-                                </li>
                                 <li class="dropdown-menu-item" data-action="ent">
                                     <i class="fas fa-stethoscope"></i>
                                     <span>ENT</span>
+                                </li>
+                                <li class="dropdown-menu-item" data-action="spine">
+                                    <i class="fas fa-user-injured"></i>
+                                    <span>Spine</span>
                                 </li>
                                 <div class="dropdown-divider"></div>
                                 <li class="dropdown-menu-item" data-action="profile">
                                     <i class="fas fa-user-circle"></i>
                                     <span>Profile</span>
                                 </li>
-                                <div class="dropdown-divider"></div>
                                 <li class="dropdown-menu-item" data-action="logout">
                                     <i class="fas fa-sign-out-alt"></i>
                                     <span>Logout</span>
@@ -1148,12 +1161,18 @@
 
         // Initialize dashboard user avatar IMMEDIATELY
         (function initDashboardUserAvatar() {
-            const name = localStorage.getItem('lmsName');
-            const email = localStorage.getItem('lmsEmail');
+            const name = localStorage.getItem('lmsName') || 'Guest User';
+            const email = localStorage.getItem('lmsEmail') || '';
             const dashAvatar = document.getElementById('dashboardUserAvatar');
+            const avatarContainer = document.querySelector('.user-avatar-container');
             
             console.log('Initializing dashboard avatar - Name:', name, 'Email:', email);
             console.log('Avatar element:', dashAvatar);
+            
+            // Always show the avatar container
+            if (avatarContainer) {
+                avatarContainer.style.display = 'flex';
+            }
             
             if (name) {
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
@@ -1177,7 +1196,12 @@
                     initialsEl.innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
                 }
             } else {
-                console.error('No user name found in localStorage!');
+                // Set default initials if no name
+                const initialsEl = document.getElementById('dashboardUserInitials');
+                if (initialsEl) {
+                    initialsEl.textContent = 'GU';
+                }
+                console.log('No user name found, using default');
             }
         })();
 
