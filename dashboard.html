@@ -644,7 +644,6 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="user-avatar-container" style="position: relative;">
                         <div class="user-avatar" id="dashboardUserAvatar" 
-                             onclick="document.getElementById('userDropdown').classList.toggle('active'); console.log('Avatar clicked via onclick!');"
                              style="width: 55px; height: 55px; border-radius: 50%; background: linear-gradient(135deg, #0066CC, #00A8B5); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.3rem; border: 3px solid rgba(255, 255, 255, 0.5); cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
                             <span id="dashboardUserInitials" style="font-size: 1.3rem; letter-spacing: 1px;">--</span>
                         </div>
@@ -1268,9 +1267,6 @@
         if (totalSlides > 1) {
             setInterval(nextSlide, 6000);
         }
-
-        // Initialize first slide stats
-        animateStats(0);
 
         // Tab switching functionality
         const tabButtons = document.querySelectorAll('.tab-btn');
