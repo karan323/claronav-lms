@@ -917,8 +917,185 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
+        // Wait for DOM to be fully loaded before initializing
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM Content Loaded - Starting initialization...');
+            
+            // Initialize user avatar first
+            initializeUserAvatar();
+            
+            // Then set up dropdown functionality
+            setupDropdownMenu();
+            
+            // Initialize other features
+            initializePage();
+        });
+        
+        // Function to initialize user avatar
+        function initializeUserAvatar() {
+            console.log('\n=== AVATAR INITIALIZATION START ===');
+            
+            // Get user data from localStorage
+            const token = localStorage.getItem('lmsToken');
+            const name = localStorage.getItem('lmsName');
+            const email = localStorage.getItem('lmsEmail');
+            
+            console.log('Token exists:', !!token);
+            console.log('Name from localStorage:', name);
+            console.log('Email from localStorage:', email);
+            
+            // Get DOM elements
+            const initialsEl = document.getElementById('dashboardUserInitials');
+            const avatarContainer = document.querySelector('.user-avatar-container');
+            const dropdownName = document.getElementById('dropdownUserName');
+            const dropdownEmail = document.getElementById('dropdownUserEmail');
+            
+            console.log('Initials element found:', !!initialsEl);
+            console.log('Avatar container found:', !!avatarContainer);
+            
+            // Add logged-in class if user is authenticated
+            if (token || name) {
+                document.body.classList.add('lms-logged-in');
+                console.log('✓ Added lms-logged-in class to body');
+            }
+            
+            // Show avatar container
+            if (avatarContainer) {
+                avatarContainer.style.display = 'flex';
+                console.log('✓ Set avatar container display to flex');
+            }
+            
+            // Set initials and user info
+            if (name && initialsEl) {
+                // Get initials from name
+                const nameParts = name.trim().split(' ');
+                let initials = '';
+                
+                if (nameParts.length >= 2) {
+                    // First name first letter + Last name first letter
+                    initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+                } else if (nameParts.length === 1 && nameParts[0].length >= 2) {
+                    // If only one name, take first two letters
+                    initials = nameParts[0].substring(0, 2).toUpperCase();
+                } else {
+                    initials = '??';
+                }
+                
+                initialsEl.textContent = initials;
+                console.log('✓ Set initials to:', initials);
+                
+                // Update dropdown header
+                if (dropdownName) {
+                    dropdownName.textContent = name;
+                    console.log('✓ Set dropdown name to:', name);
+                }
+                if (dropdownEmail && email) {
+                    dropdownEmail.textContent = email;
+                    console.log('✓ Set dropdown email to:', email);
+                }
+                
+                // Check for profile photo
+                const profilePhoto = localStorage.getItem('lmsProfilePhoto');
+                if (profilePhoto) {
+                    initialsEl.innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Profile">`;
+                    console.log('✓ Using profile photo');
+                }
+            } else {
+                console.error('❌ Name not found in localStorage or initials element missing!');
+                console.error('   This means user data was not saved during login.');
+                if (initialsEl) {
+                    initialsEl.textContent = '??';
+                }
+            }
+            
+            console.log('=== AVATAR INITIALIZATION END ===\n');
+        }
+        
+        // Function to setup dropdown menu
+        function setupDropdownMenu() {
+            console.log('\n=== DROPDOWN SETUP START ===');
+            
+            const userAvatar = document.getElementById('dashboardUserAvatar');
+            const userDropdown = document.getElementById('userDropdown');
+            const dropdownItems = document.querySelectorAll('.dropdown-menu-item');
+            
+            console.log('Avatar element:', userAvatar);
+            console.log('Dropdown element:', userDropdown);
+            console.log('Dropdown items count:', dropdownItems.length);
+            
+            if (!userAvatar) {
+                console.error('❌ User avatar element not found!');
+                return;
+            }
+            
+            if (!userDropdown) {
+                console.error('❌ User dropdown element not found!');
+                return;
+            }
+            
+            // Toggle dropdown when clicking avatar
+            userAvatar.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isActive = userDropdown.classList.contains('active');
+                userDropdown.classList.toggle('active');
+                console.log('🖱️ Avatar clicked! Dropdown is now:', isActive ? 'CLOSED' : 'OPEN');
+            });
+            console.log('✓ Click handler attached to avatar');
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.user-avatar-container')) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+            console.log('✓ Outside click handler attached');
+            
+            // Handle dropdown menu item clicks
+            dropdownItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const action = item.getAttribute('data-action');
+                    console.log('📋 Menu item clicked:', action);
+                    
+                    // Close dropdown
+                    userDropdown.classList.remove('active');
+                    
+                    if (action === 'cranial' || action === 'spine' || action === 'ent') {
+                        // Navigate to modules section
+                        const modulesSection = document.getElementById('modules');
+                        if (modulesSection) {
+                            modulesSection.style.display = 'block';
+                            const tabBtn = document.querySelector(`.tab-btn[data-tab="${action}"]`);
+                            if (tabBtn) {
+                                tabBtn.click();
+                                console.log('✓ Switched to', action, 'tab');
+                            }
+                            modulesSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    } else if (action === 'profile') {
+                        console.log('🔗 Opening profile page');
+                        window.open('profile.html', '_blank');
+                    } else if (action === 'logout') {
+                        console.log('🚪 Logging out...');
+                        localStorage.removeItem('lmsToken');
+                        localStorage.removeItem('lmsName');
+                        localStorage.removeItem('lmsEmail');
+                        localStorage.removeItem('lmsProfilePhoto');
+                        localStorage.removeItem('lmsSerial');
+                        localStorage.removeItem('lmsHospital');
+                        localStorage.removeItem('lmsUser');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+            console.log('✓ Menu item handlers attached');
+            
+            console.log('=== DROPDOWN SETUP END ===\n');
+        }
+        
+        // Function to initialize the rest of the page
+        function initializePage() {
             const header = document.getElementById('modernHeader');
             if (window.scrollY > 50) {
                 header.classList.add('scrolled');
@@ -968,57 +1145,12 @@
             });
         });
 
-        // User Dropdown Menu - Enhanced with logging
-        const userAvatar = document.getElementById('dashboardUserAvatar');
-        const userDropdown = document.getElementById('userDropdown');
-        const dropdownItems = document.querySelectorAll('.dropdown-menu-item');
-
-        console.log('=== Dropdown Setup ===');
-        console.log('User Avatar:', userAvatar);
-        console.log('User Dropdown:', userDropdown);
-        console.log('Dropdown Items:', dropdownItems.length);
-
-        // Toggle dropdown when clicking avatar
-        if (userAvatar && userDropdown) {
-            userAvatar.addEventListener('click', (e) => {
-                e.stopPropagation();
-                console.log('Avatar clicked! Toggling dropdown');
-                const isActive = userDropdown.classList.contains('active');
-                userDropdown.classList.toggle('active');
-                console.log('Dropdown is now:', isActive ? 'closed' : 'open');
-            });
-            console.log('✓ Click handler attached to avatar');
-        } else {
-            console.error('✗ Avatar or dropdown not found!');
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (userDropdown && !e.target.closest('.user-avatar-container')) {
-                userDropdown.classList.remove('active');
-            }
-        });
-
-        // Handle dropdown menu actions
-        dropdownItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const action = item.getAttribute('data-action');
-                
-                // Close dropdown
-                userDropdown.classList.remove('active');
-                
-                if (action === 'cranial' || action === 'spine' || action === 'ent') {
-                    // Navigate to modules section and switch tab
-                    document.getElementById('modules').style.display = 'block';
-                    const tabBtn = document.querySelector(`.tab-btn[data-tab="${action}"]`);
-                    if (tabBtn) tabBtn.click();
-                    document.getElementById('modules').scrollIntoView({ behavior: 'smooth' });
-                } else if (action === 'profile') {
-                    // Open profile in new window
-                    window.open('profile.html', '_blank');
-                } else if (action === 'logout') {
-                    // Logout
+        // Function to initialize the rest of the page
+        function initializePage() {
+            console.log('Initializing page features...');
+            
+            // Header scroll effect
+            window.addEventListener('scroll', () => {
                     localStorage.removeItem('lmsToken');
                     localStorage.removeItem('lmsName');
                     localStorage.removeItem('lmsEmail');
@@ -1178,63 +1310,20 @@
             }
         }
 
-        // Initialize dashboard user avatar
-        (function initDashboardUserAvatar() {
-            // Ensure body has logged-in class
-            const hasToken = !!localStorage.getItem('lmsToken');
-            const hasLocal = !!localStorage.getItem('lmsUser');
-            if (hasToken || hasLocal) {
-                document.body.classList.add('lms-logged-in');
-            }
-            
-            const name = localStorage.getItem('lmsName');
-            const email = localStorage.getItem('lmsEmail');
-            const initialsEl = document.getElementById('dashboardUserInitials');
-            const avatarContainer = document.querySelector('.user-avatar-container');
-            
-            console.log('=== Dashboard Avatar Init ===');
-            console.log('Name:', name);
-            console.log('Email:', email);
-            console.log('Avatar container:', avatarContainer);
-            console.log('Body has lms-logged-in:', document.body.classList.contains('lms-logged-in'));
-            
-            if (name && initialsEl) {
-                // Get initials (first letter of first name + first letter of last name)
-                const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                initialsEl.textContent = initials;
-                console.log('Set initials to:', initials);
-                
-                // Update dropdown header
-                const dropdownName = document.getElementById('dropdownUserName');
-                const dropdownEmail = document.getElementById('dropdownUserEmail');
-                if (dropdownName) dropdownName.textContent = name;
-                if (dropdownEmail) dropdownEmail.textContent = email || '';
-                
-                // Check for profile photo
-                const profilePhoto = localStorage.getItem('lmsProfilePhoto');
-                if (profilePhoto) {
-                    initialsEl.innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Profile">`;
-                }
-            } else {
-                console.warn('Name not found or initials element missing');
-                if (initialsEl) initialsEl.textContent = '??';
-            }
-            
-            // Force display
-            if (avatarContainer && (hasToken || hasLocal)) {
-                avatarContainer.style.display = 'flex';
-                console.log('Avatar container display set to flex');
-            }
-        })();
-
         // Initialize
         updateAuthUI();
         refreshAuthState();
-        
-        // Show home sections by default
-        document.querySelector('.hero-section').style.display = 'flex';
-        document.querySelector('.interactive-cards').style.display = 'block';
-        document.getElementById('modules').style.display = 'block';
+            
+            // Show home sections by default
+            const heroSection = document.querySelector('.hero-section');
+            const interactiveCards = document.querySelector('.interactive-cards');
+            const modulesSection = document.getElementById('modules');
+            if (heroSection) heroSection.style.display = 'flex';
+            if (interactiveCards) interactiveCards.style.display = 'block';
+            if (modulesSection) modulesSection.style.display = 'block';
+            
+            console.log('✓ Page initialization complete');
+        } // End of initializePage
 
         // Profile functionality (for separate profile page)
         async function loadProfileData() {
