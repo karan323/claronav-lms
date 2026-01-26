@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Avatar</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #0066CC; }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #0066CC;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background: #004499; }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        
+        /* Avatar Test */
+        .avatar-demo {
+            position: relative;
+            display: inline-block;
+        }
+        .user-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0066CC, #00A8B5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+        }
+        .user-dropdown {
+            position: absolute;
+            top: 65px;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            min-width: 250px;
+            display: none;
+            z-index: 1001;
+        }
+        .user-dropdown.active {
+            display: block;
+        }
+        .dropdown-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #0066CC, #003D7A);
+            color: white;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+        }
+        .dropdown-menu-list {
+            list-style: none;
+            padding: 0.5rem 0;
+            margin: 0;
+        }
+        .dropdown-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .dropdown-menu-item:hover {
+            background: #E6F2FF;
+            color: #0066CC;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: #E0E0E0;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Avatar & Dropdown Test Page</h1>
+        <p>Use this page to test and set up your avatar before going to the dashboard.</p>
+
+        <!-- Test Section 1: Set User Data -->
+        <div class="test-section">
+            <h2>1. Set User Data</h2>
+            <input type="text" id="userName" placeholder="Enter your name (e.g., John Doe)" style="width: 300px; padding: 8px; margin: 10px 0;">
+            <input type="email" id="userEmail" placeholder="Enter your email" style="width: 300px; padding: 8px; margin: 10px 0;">
+            <br>
+            <button onclick="setUserData()">Set User Data</button>
+            <button onclick="clearUserData()">Clear User Data</button>
+            <div id="userData" class="status info"></div>
+        </div>
+
+        <!-- Test Section 2: Avatar Preview -->
+        <div class="test-section">
+            <h2>2. Avatar Preview</h2>
+            <div class="avatar-demo">
+                <div class="user-avatar" id="testAvatar" onclick="toggleDropdown()">
+                    <span id="testInitials">??</span>
+                </div>
+                <div class="user-dropdown" id="testDropdown">
+                    <div class="dropdown-header">
+                        <h6 id="testDropdownName" style="margin: 0; font-weight: 600;">User Name</h6>
+                        <p id="testDropdownEmail" style="margin: 0.25rem 0 0 0; font-size: 0.85rem; opacity: 0.9;">user@email.com</p>
+                    </div>
+                    <ul class="dropdown-menu-list">
+                        <li class="dropdown-menu-item" onclick="alert('Cranial clicked!')">
+                            <i class="fas fa-brain"></i>
+                            <span>Cranial</span>
+                        </li>
+                        <li class="dropdown-menu-item" onclick="alert('ENT clicked!')">
+                            <i class="fas fa-stethoscope"></i>
+                            <span>ENT</span>
+                        </li>
+                        <li class="dropdown-menu-item" onclick="alert('Spine clicked!')">
+                            <i class="fas fa-user-injured"></i>
+                            <span>Spine</span>
+                        </li>
+                        <div class="dropdown-divider"></div>
+                        <li class="dropdown-menu-item" onclick="alert('Profile clicked!')">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Profile</span>
+                        </li>
+                        <li class="dropdown-menu-item" onclick="alert('Logout clicked!')">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <p><small>Click the avatar above to test the dropdown menu</small></p>
+        </div>
+
+        <!-- Test Section 3: Go to Dashboard -->
+        <div class="test-section">
+            <h2>3. Ready to Test?</h2>
+            <button onclick="goToDashboard()" style="background: #28a745; font-size: 16px; padding: 15px 30px;">
+                Go to Dashboard →
+            </button>
+            <p><small>Make sure you've set your user data first!</small></p>
+        </div>
+
+        <!-- Test Section 4: LocalStorage Viewer -->
+        <div class="test-section">
+            <h2>4. Current LocalStorage</h2>
+            <button onclick="showLocalStorage()">Refresh LocalStorage View</button>
+            <div id="localStorageView" class="status info" style="white-space: pre-wrap; font-size: 12px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.avatar-demo')) {
+                document.getElementById('testDropdown').classList.remove('active');
+            }
+        });
+
+        function setUserData() {
+            const name = document.getElementById('userName').value.trim();
+            const email = document.getElementById('userEmail').value.trim();
+            
+            if (!name || !email) {
+                document.getElementById('userData').innerHTML = '❌ Please enter both name and email';
+                document.getElementById('userData').className = 'status error';
+                return;
+            }
+
+            // Set localStorage
+            localStorage.setItem('lmsName', name);
+            localStorage.setItem('lmsEmail', email);
+            localStorage.setItem('lmsToken', 'test-token-' + Date.now());
+            localStorage.setItem('lmsUser', JSON.stringify({ name, email }));
+
+            // Update avatar
+            updateAvatar();
+
+            document.getElementById('userData').innerHTML = '✅ User data saved successfully!<br>Name: ' + name + '<br>Email: ' + email;
+            document.getElementById('userData').className = 'status success';
+        }
+
+        function clearUserData() {
+            localStorage.removeItem('lmsName');
+            localStorage.removeItem('lmsEmail');
+            localStorage.removeItem('lmsToken');
+            localStorage.removeItem('lmsUser');
+            
+            document.getElementById('testInitials').textContent = '??';
+            document.getElementById('testDropdownName').textContent = 'User Name';
+            document.getElementById('testDropdownEmail').textContent = 'user@email.com';
+            
+            document.getElementById('userData').innerHTML = '🗑️ User data cleared';
+            document.getElementById('userData').className = 'status info';
+        }
+
+        function updateAvatar() {
+            const name = localStorage.getItem('lmsName');
+            const email = localStorage.getItem('lmsEmail');
+            
+            if (name) {
+                const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                document.getElementById('testInitials').textContent = initials;
+                document.getElementById('testDropdownName').textContent = name;
+                document.getElementById('testDropdownEmail').textContent = email || '';
+            }
+        }
+
+        function toggleDropdown() {
+            document.getElementById('testDropdown').classList.toggle('active');
+        }
+
+        function showLocalStorage() {
+            const keys = ['lmsName', 'lmsEmail', 'lmsToken', 'lmsUser', 'lmsSerial', 'lmsHospital', 'lmsProfilePhoto'];
+            let output = 'LocalStorage Contents:\n\n';
+            
+            keys.forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    output += key + ' = ' + (value.length > 100 ? value.substring(0, 100) + '...' : value) + '\n';
+                }
+            });
+            
+            if (output === 'LocalStorage Contents:\n\n') {
+                output += '(empty - no user data found)';
+            }
+            
+            document.getElementById('localStorageView').textContent = output;
+        }
+
+        function goToDashboard() {
+            const hasData = localStorage.getItem('lmsName') && localStorage.getItem('lmsToken');
+            if (!hasData) {
+                alert('⚠️ Please set user data first!');
+                return;
+            }
+            window.location.href = 'dashboard.html';
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateAvatar();
+            showLocalStorage();
+        });
+    </script>
+</body>
+</html>
