@@ -1235,13 +1235,17 @@
         
         // Function to initialize the rest of the page
         function initializePage() {
-            const header = document.getElementById('modernHeader');
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
+            console.log('Initializing page features...');
+            
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('modernHeader');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
 
         // Hero carousel functionality
         let currentSlide = 0;
