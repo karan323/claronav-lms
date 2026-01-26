@@ -965,7 +965,10 @@
             console.log('=== IMMEDIATE INIT START ===');
             const name = localStorage.getItem('lmsName');
             const email = localStorage.getItem('lmsEmail');
-            console.log('User data:', { name, email });
+            const token = localStorage.getItem('lmsToken');
+            console.log('LocalStorage Data:', { name, email, token });
+            console.log('Name length:', name ? name.length : 0);
+            console.log('Email length:', email ? email.length : 0);
             
             // Try to set initials immediately
             const trySetInitials = function() {
@@ -974,17 +977,45 @@
                 const dropdownEmail = document.getElementById('dropdownUserEmail');
                 const avatarContainer = document.querySelector('.user-avatar-container');
                 
-                if (initialsEl && name) {
-                    const parts = name.trim().split(' ');
-                    const initials = parts.length >= 2 
-                        ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
-                        : parts[0].substring(0, 2).toUpperCase();
-                    initialsEl.textContent = initials;
-                    console.log('[OK] IMMEDIATE: Set initials to', initials);
+                console.log('Elements found:', {
+                    initialsEl: !!initialsEl,
+                    dropdownName: !!dropdownName,
+                    dropdownEmail: !!dropdownEmail,
+                    avatarContainer: !!avatarContainer
+                });
+                
+                if (initialsEl) {
+                    if (name) {
+                        const parts = name.trim().split(' ');
+                        const initials = parts.length >= 2 
+                            ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+                            : parts[0].substring(0, 2).toUpperCase();
+                        initialsEl.textContent = initials;
+                        console.log('[OK] IMMEDIATE: Set initials to', initials, 'from name:', name);
+                    } else {
+                        console.log('[WARN] No name found in localStorage!');
+                        initialsEl.textContent = '--';
+                    }
                 }
                 
-                if (dropdownName && name) dropdownName.textContent = name;
-                if (dropdownEmail && email) dropdownEmail.textContent = email;
+                if (dropdownName) {
+                    if (name) {
+                        dropdownName.textContent = name;
+                        console.log('[OK] Set dropdown name to:', name);
+                    } else {
+                        console.log('[WARN] No name to set in dropdown');
+                    }
+                }
+                
+                if (dropdownEmail) {
+                    if (email) {
+                        dropdownEmail.textContent = email;
+                        console.log('[OK] Set dropdown email to:', email);
+                    } else {
+                        console.log('[WARN] No email to set in dropdown');
+                    }
+                }
+                
                 if (avatarContainer) {
                     avatarContainer.style.display = 'flex';
                     document.body.classList.add('lms-logged-in');
@@ -996,11 +1027,20 @@
             // Try immediately
             if (!trySetInitials()) {
                 // If failed, try again when DOM loads
+                console.log('[INFO] Initial attempt failed, will retry on DOM ready');
                 if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', trySetInitials);
+                    document.addEventListener('DOMContentLoaded', function() {
+                        console.log('[RETRY] Trying again on DOMContentLoaded');
+                        trySetInitials();
+                    });
                 } else {
-                    setTimeout(trySetInitials, 100);
+                    setTimeout(function() {
+                        console.log('[RETRY] Trying again after 100ms delay');
+                        trySetInitials();
+                    }, 100);
                 }
+            } else {
+                console.log('[SUCCESS] Avatar initialized immediately');
             }
         })();
         
@@ -1020,7 +1060,7 @@
         
         // Function to initialize user avatar
         function initializeUserAvatar() {
-            console.log('\n=== AVATAR INITIALIZATION START ===');
+            console.log('=== AVATAR INITIALIZATION START ===');
             
             // Get user data from localStorage
             const token = localStorage.getItem('lmsToken');
@@ -1028,8 +1068,8 @@
             const email = localStorage.getItem('lmsEmail');
             
             console.log('Token exists:', !!token);
-            console.log('Name from localStorage:', name);
-            console.log('Email from localStorage:', email);
+            console.log('Name from localStorage:', JSON.stringify(name));
+            console.log('Email from localStorage:', JSON.stringify(email));
             
             // Get DOM elements
             const initialsEl = document.getElementById('dashboardUserInitials');
@@ -1039,6 +1079,8 @@
             
             console.log('Initials element found:', !!initialsEl);
             console.log('Avatar container found:', !!avatarContainer);
+            console.log('Dropdown name element found:', !!dropdownName);
+            console.log('Dropdown email element found:', !!dropdownEmail);
             
             // Add logged-in class if user is authenticated
             if (token || name) {
@@ -1058,6 +1100,8 @@
                 const nameParts = name.trim().split(' ');
                 let initials = '';
                 
+                console.log('Name parts:', nameParts);
+                
                 if (nameParts.length >= 2) {
                     // First name first letter + Last name first letter
                     initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
@@ -1069,16 +1113,23 @@
                 }
                 
                 initialsEl.textContent = initials;
-                console.log('[OK] Set initials to:', initials);
+                console.log('[OK] Set initials to:', initials, 'from name:', name);
                 
-                // Update dropdown header
+                // Update dropdown header - FORCE UPDATE
                 if (dropdownName) {
                     dropdownName.textContent = name;
+                    dropdownName.innerHTML = name; // Force update
                     console.log('[OK] Set dropdown name to:', name);
+                } else {
+                    console.log('[ERROR] dropdownName element not found!');
                 }
+                
                 if (dropdownEmail && email) {
                     dropdownEmail.textContent = email;
+                    dropdownEmail.innerHTML = email; // Force update
                     console.log('[OK] Set dropdown email to:', email);
+                } else {
+                    console.log('[ERROR] dropdownEmail element not found or email missing!');
                 }
                 
                 // Check for profile photo
@@ -1089,7 +1140,8 @@
                 }
             } else {
                 console.error('[ERROR] Name not found in localStorage or initials element missing!');
-                console.error('   This means user data was not saved during login.');
+                console.error('   Name:', name);
+                console.error('   Initials element:', initialsEl);
                 if (initialsEl) {
                     initialsEl.textContent = '??';
                 }
