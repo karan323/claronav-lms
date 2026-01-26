@@ -575,12 +575,17 @@
         }
 
         /* Auth visibility helpers */
-        .auth-only { display: none !important; }
+        .auth-only { display: none; }
         .not-auth { display: block; }
-        .lms-logged-in .auth-only { display: block !important; }
+        body.lms-logged-in .auth-only { display: block; }
+        body.lms-logged-in .not-auth { display: none; }
         
-        /* User Avatar Container - Always visible when logged in */
-        .user-avatar-container.auth-only {
+        /* User Avatar Container - Override for visibility */
+        .user-avatar-container {
+            display: none;
+        }
+        
+        body.lms-logged-in .user-avatar-container {
             display: flex !important;
         }
         
@@ -592,7 +597,6 @@
         .user-avatar:active {
             transform: scale(0.98);
         }
-        .lms-logged-in .not-auth { display: none !important; }
     </style>
 </head>
 <body>
@@ -622,9 +626,9 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="user-avatar-container auth-only" style="position: relative; display: flex !important;">
+                    <div class="user-avatar-container" style="position: relative;">
                         <div class="user-avatar" id="dashboardUserAvatar" style="width: 55px; height: 55px; border-radius: 50%; background: linear-gradient(135deg, #0066CC, #00A8B5); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.3rem; border: 3px solid rgba(255, 255, 255, 0.5); cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
-                            <span id="dashboardUserInitials" style="font-size: 1.3rem; letter-spacing: 1px;"></span>
+                            <span id="dashboardUserInitials" style="font-size: 1.3rem; letter-spacing: 1px;">--</span>
                         </div>
                         <div class="user-dropdown" id="userDropdown">
                             <div class="dropdown-header">
@@ -900,8 +904,12 @@
                 window.location.replace('login.html');
             }
             
-            if (hasToken || hasLocal) document.documentElement.classList.add('lms-logged-in');
-            else document.documentElement.classList.remove('lms-logged-in');
+            if (hasToken || hasLocal) {
+                document.body.classList.add('lms-logged-in');
+                console.log('User is logged in - showing avatar');
+            } else {
+                document.body.classList.remove('lms-logged-in');
+            }
         })();
     </script>
 
@@ -960,17 +968,28 @@
             });
         });
 
-        // User Dropdown Menu
+        // User Dropdown Menu - Enhanced with logging
         const userAvatar = document.getElementById('dashboardUserAvatar');
         const userDropdown = document.getElementById('userDropdown');
         const dropdownItems = document.querySelectorAll('.dropdown-menu-item');
 
+        console.log('=== Dropdown Setup ===');
+        console.log('User Avatar:', userAvatar);
+        console.log('User Dropdown:', userDropdown);
+        console.log('Dropdown Items:', dropdownItems.length);
+
         // Toggle dropdown when clicking avatar
-        if (userAvatar) {
+        if (userAvatar && userDropdown) {
             userAvatar.addEventListener('click', (e) => {
                 e.stopPropagation();
+                console.log('Avatar clicked! Toggling dropdown');
+                const isActive = userDropdown.classList.contains('active');
                 userDropdown.classList.toggle('active');
+                console.log('Dropdown is now:', isActive ? 'closed' : 'open');
             });
+            console.log('✓ Click handler attached to avatar');
+        } else {
+            console.error('✗ Avatar or dropdown not found!');
         }
 
         // Close dropdown when clicking outside
@@ -1159,30 +1178,31 @@
             }
         }
 
-        // Initialize dashboard user avatar IMMEDIATELY
+        // Initialize dashboard user avatar
         (function initDashboardUserAvatar() {
-            const name = localStorage.getItem('lmsName') || 'Guest User';
-            const email = localStorage.getItem('lmsEmail') || '';
-            const dashAvatar = document.getElementById('dashboardUserAvatar');
-            const avatarContainer = document.querySelector('.user-avatar-container');
-            
-            console.log('Initializing dashboard avatar - Name:', name, 'Email:', email);
-            console.log('Avatar element:', dashAvatar);
-            
-            // Always show the avatar container
-            if (avatarContainer) {
-                avatarContainer.style.display = 'flex';
+            // Ensure body has logged-in class
+            const hasToken = !!localStorage.getItem('lmsToken');
+            const hasLocal = !!localStorage.getItem('lmsUser');
+            if (hasToken || hasLocal) {
+                document.body.classList.add('lms-logged-in');
             }
             
-            if (name) {
+            const name = localStorage.getItem('lmsName');
+            const email = localStorage.getItem('lmsEmail');
+            const initialsEl = document.getElementById('dashboardUserInitials');
+            const avatarContainer = document.querySelector('.user-avatar-container');
+            
+            console.log('=== Dashboard Avatar Init ===');
+            console.log('Name:', name);
+            console.log('Email:', email);
+            console.log('Avatar container:', avatarContainer);
+            console.log('Body has lms-logged-in:', document.body.classList.contains('lms-logged-in'));
+            
+            if (name && initialsEl) {
+                // Get initials (first letter of first name + first letter of last name)
                 const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                const initialsEl = document.getElementById('dashboardUserInitials');
-                if (initialsEl) {
-                    initialsEl.textContent = initials;
-                    console.log('Set initials to:', initials);
-                } else {
-                    console.error('initialsEl not found!');
-                }
+                initialsEl.textContent = initials;
+                console.log('Set initials to:', initials);
                 
                 // Update dropdown header
                 const dropdownName = document.getElementById('dropdownUserName');
@@ -1192,16 +1212,18 @@
                 
                 // Check for profile photo
                 const profilePhoto = localStorage.getItem('lmsProfilePhoto');
-                if (profilePhoto && initialsEl) {
-                    initialsEl.innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                if (profilePhoto) {
+                    initialsEl.innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Profile">`;
                 }
             } else {
-                // Set default initials if no name
-                const initialsEl = document.getElementById('dashboardUserInitials');
-                if (initialsEl) {
-                    initialsEl.textContent = 'GU';
-                }
-                console.log('No user name found, using default');
+                console.warn('Name not found or initials element missing');
+                if (initialsEl) initialsEl.textContent = '??';
+            }
+            
+            // Force display
+            if (avatarContainer && (hasToken || hasLocal)) {
+                avatarContainer.style.display = 'flex';
+                console.log('Avatar container display set to flex');
             }
         })();
 
