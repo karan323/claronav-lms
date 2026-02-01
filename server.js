@@ -34,6 +34,25 @@ function readData() {
   }
 }
 
+function normalizeUserStatus(user) {
+  if (!user) return user;
+  if (!user.accountStatus) user.accountStatus = 'approved';
+  if (!user.registeredAt) user.registeredAt = new Date().toISOString();
+  return user;
+}
+
+function isApproved(user) {
+  return user && String(user.accountStatus).toLowerCase() === 'approved';
+}
+
+function isPending(user) {
+  return user && String(user.accountStatus).toLowerCase() === 'pending';
+}
+
+function isRejected(user) {
+  return user && String(user.accountStatus).toLowerCase() === 'rejected';
+}
+
 function writeData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
@@ -58,13 +77,21 @@ app.post('/api/signup', (req, res) => {
   if (!email || !firstName || !lastName || !serial || !hospital || !password) return res.status(400).json({ error: 'Missing fields' });
   const data = readData();
   if (data.users[email]) return res.status(400).json({ error: 'Email already registered' });
-  data.users[email] = { email, firstName, lastName, serial, hospital, password };
+  data.users[email] = {
+    email,
+    firstName,
+    lastName,
+    serial,
+    hospital,
+    password,
+    accountStatus: 'pending',
+    registeredAt: new Date().toISOString()
+  };
   writeData(data);
-  // create session token
-  const token = randomBytes(16).toString('hex');
-  data.sessions[token] = email;
-  writeData(data);
-  res.json({ success: true, token, name: firstName + ' ' + lastName, email, serial, hospital });
+  res.json({
+    success: true,
+    message: 'Your account is pending admin approval. Please wait for approval.'
+  });
 });
 
 app.post('/api/login', (req, res) => {
@@ -73,6 +100,16 @@ app.post('/api/login', (req, res) => {
   const data = readData();
   const user = data.users[email];
   if (!user || user.password !== password) return res.status(401).json({ error: 'Invalid credentials' });
+  normalizeUserStatus(user);
+  if (isPending(user)) {
+    return res.status(403).json({ error: 'Your account is pending admin approval. Please wait for approval.' });
+  }
+  if (isRejected(user)) {
+    return res.status(403).json({
+      error: 'Your account has been rejected. Please contact support.',
+      reason: user.rejectedReason || undefined
+    });
+  }
   const token = randomBytes(16).toString('hex');
   data.sessions[token] = email;
   writeData(data);
@@ -84,6 +121,8 @@ app.get('/api/progress', (req, res) => {
   const data = readData();
   const email = data.sessions[token];
   if (!email) return res.status(401).json({ error: 'Unauthorized' });
+  const user = normalizeUserStatus(data.users[email]);
+  if (!isApproved(user)) return res.status(403).json({ error: 'Account not approved' });
   const prog = data.progress[email] || {};
   res.json({ success: true, progress: prog });
 });
@@ -94,6 +133,8 @@ app.post('/api/progress', (req, res) => {
   const data = readData();
   const email = data.sessions[token];
   if (!email) return res.status(401).json({ error: 'Unauthorized' });
+  const user = normalizeUserStatus(data.users[email]);
+  if (!isApproved(user)) return res.status(403).json({ error: 'Account not approved' });
   data.progress[email] = data.progress[email] || {};
   data.progress[email][section] = value;
   writeData(data);
@@ -109,6 +150,8 @@ app.get('/api/profile', (req, res) => {
   if (!email) return res.status(401).json({ error: 'Unauthorized' });
   const user = data.users[email];
   if (!user) return res.status(404).json({ error: 'User not found' });
+  normalizeUserStatus(user);
+  if (!isApproved(user)) return res.status(403).json({ error: 'Account not approved' });
   // Don't send password
   const { password, ...userWithoutPassword } = user;
   res.json({ success: true, user: userWithoutPassword });
@@ -123,6 +166,8 @@ app.post('/api/profile', (req, res) => {
   if (!email) return res.status(401).json({ error: 'Unauthorized' });
   const user = data.users[email];
   if (!user) return res.status(404).json({ error: 'User not found' });
+  normalizeUserStatus(user);
+  if (!isApproved(user)) return res.status(403).json({ error: 'Account not approved' });
   
   // Update user data
   if (firstName) user.firstName = firstName;
@@ -143,6 +188,8 @@ app.post('/api/change-password', (req, res) => {
   if (!email) return res.status(401).json({ error: 'Unauthorized' });
   const user = data.users[email];
   if (!user) return res.status(404).json({ error: 'User not found' });
+  normalizeUserStatus(user);
+  if (!isApproved(user)) return res.status(403).json({ error: 'Account not approved' });
   
   // Verify current password
   if (user.password !== currentPassword) return res.status(401).json({ error: 'Current password is incorrect' });
@@ -154,6 +201,15 @@ app.post('/api/change-password', (req, res) => {
 });
 
 // ============ ADMIN ENDPOINTS ============
+
+function requireAdmin(req, res, data) {
+  const token = req.query.token || req.body.token;
+  if (!token) return { ok: false, error: res.status(400).json({ error: 'Missing token' }) };
+  if (!data.adminSessions || !data.adminSessions[token]) {
+    return { ok: false, error: res.status(401).json({ error: 'Unauthorized' }) };
+  }
+  return { ok: true, token };
+}
 
 // Admin login
 app.post('/api/admin/login', (req, res) => {
@@ -182,22 +238,19 @@ app.post('/api/admin/login', (req, res) => {
 
 // Get all users with progress
 app.get('/api/admin/users', (req, res) => {
-  const token = req.query.token;
-  if (!token) return res.status(400).json({ error: 'Missing token' });
-  
   const data = readData();
-  
-  // Verify admin token
-  if (!data.adminSessions || !data.adminSessions[token]) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) return;
   
   const users = Object.values(data.users || {}).map(u => ({
     email: u.email,
     firstName: u.firstName,
     lastName: u.lastName,
     hospital: u.hospital,
-    serial: u.serial
+    serial: u.serial,
+    accountStatus: normalizeUserStatus(u).accountStatus,
+    registeredAt: u.registeredAt,
+    rejectedReason: u.rejectedReason || null
   }));
   
   res.json({ 
@@ -207,17 +260,45 @@ app.get('/api/admin/users', (req, res) => {
   });
 });
 
+// Approve user
+app.post('/api/admin/users/approve', (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ error: 'Missing fields' });
+  const data = readData();
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) return;
+
+  const user = data.users[email];
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  normalizeUserStatus(user);
+  user.accountStatus = 'approved';
+  user.rejectedReason = undefined;
+  writeData(data);
+  res.json({ success: true, message: 'User approved' });
+});
+
+// Reject user (optional)
+app.post('/api/admin/users/reject', (req, res) => {
+  const { email, reason } = req.body || {};
+  if (!email) return res.status(400).json({ error: 'Missing fields' });
+  const data = readData();
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) return;
+
+  const user = data.users[email];
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  normalizeUserStatus(user);
+  user.accountStatus = 'rejected';
+  user.rejectedReason = reason || 'Rejected by admin';
+  writeData(data);
+  res.json({ success: true, message: 'User rejected' });
+});
+
 // Get module content
 app.get('/api/admin/modules/content', (req, res) => {
-  const token = req.query.token;
-  if (!token) return res.status(400).json({ error: 'Missing token' });
-  
   const data = readData();
-  
-  // Verify admin token
-  if (!data.adminSessions || !data.adminSessions[token]) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) return;
   
   const content = data.moduleContent || { cranial: [], spine: [], ent: [] };
   
@@ -245,12 +326,11 @@ app.post('/api/admin/modules/upload', upload.single('file'), (req, res) => {
   }
   
   const data = readData();
-  
-  // Verify admin token
-  if (!data.adminSessions || !data.adminSessions[token]) {
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) {
     // Clean up uploaded file
     if (req.file) fs.unlinkSync(req.file.path);
-    return res.status(401).json({ error: 'Unauthorized' });
+    return;
   }
   
   // Initialize moduleContent if needed
@@ -286,11 +366,8 @@ app.delete('/api/admin/modules/content', (req, res) => {
   }
   
   const data = readData();
-  
-  // Verify admin token
-  if (!data.adminSessions || !data.adminSessions[token]) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) return;
   
   if (!data.moduleContent || !data.moduleContent[module] || !data.moduleContent[module][index]) {
     return res.status(404).json({ error: 'Content not found' });
