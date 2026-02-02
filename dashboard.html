@@ -1132,7 +1132,7 @@
                 }
                 
                 // Check for profile photo
-                const profilePhoto = localStorage.getItem('lmsProfilePhoto');
+                const profilePhoto = localStorage.getItem('lmsProfilePhotoUrl') || localStorage.getItem('lmsProfilePhoto');
                 if (profilePhoto) {
                     initialsEl.innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Profile">`;
                     console.log('[OK] Using profile photo');
@@ -1220,6 +1220,7 @@
                         localStorage.removeItem('lmsName');
                         localStorage.removeItem('lmsEmail');
                         localStorage.removeItem('lmsProfilePhoto');
+                        localStorage.removeItem('lmsProfilePhotoUrl');
                         localStorage.removeItem('lmsSerial');
                         localStorage.removeItem('lmsHospital');
                         localStorage.removeItem('lmsUser');
@@ -1472,7 +1473,7 @@
                     document.getElementById('profileInitials').textContent = initials.toUpperCase();
                     
                     // Load profile photo if exists
-                    const profilePhoto = localStorage.getItem('lmsProfilePhoto');
+                    const profilePhoto = localStorage.getItem('lmsProfilePhotoUrl') || localStorage.getItem('lmsProfilePhoto');
                     if (profilePhoto) {
                         document.getElementById('profilePhotoDisplay').innerHTML = `<img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
                     }

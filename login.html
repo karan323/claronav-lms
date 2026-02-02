@@ -194,6 +194,8 @@
         localStorage.setItem('lmsToken', j.token);
         localStorage.setItem('lmsName', j.name);
         localStorage.setItem('lmsEmail', j.email);
+        if (j.serial) localStorage.setItem('lmsSerial', j.serial);
+        if (j.hospital) localStorage.setItem('lmsHospital', j.hospital);
         // Redirect to dashboard - use replace to prevent back navigation
         window.location.replace('dashboard.html');
       } catch (err) {

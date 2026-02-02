@@ -7,10 +7,14 @@ const multer = require('multer');
 
 const DATA_FILE = path.join(__dirname, 'data.json');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
+const AVATAR_DIR = path.join(UPLOAD_DIR, 'avatars');
 
 // Ensure upload directory exists
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+if (!fs.existsSync(AVATAR_DIR)) {
+  fs.mkdirSync(AVATAR_DIR, { recursive: true });
 }
 
 // Configure multer for file uploads
@@ -25,6 +29,21 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage, limits: { fileSize: 500 * 1024 * 1024 } }); // 500MB limit
+
+const avatarStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, AVATAR_DIR);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + Math.random().toString(36).substr(2, 9) + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
+});
+
+const avatarUpload = multer({
+  storage: avatarStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }
+});
 
 function readData() {
   try {
@@ -164,6 +183,23 @@ app.get('/api/profile', (req, res) => {
   // Don't send password
   const { password, ...userWithoutPassword } = user;
   res.json({ success: true, user: userWithoutPassword });
+});
+
+// Upload profile photo
+app.post('/api/profile/photo', avatarUpload.single('photo'), (req, res) => {
+  const { token } = req.body || {};
+  if (!token || !req.file) return res.status(400).json({ error: 'Missing fields' });
+  const data = readData();
+  const email = data.sessions[token];
+  if (!email) return res.status(401).json({ error: 'Unauthorized' });
+  const user = data.users[email];
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  normalizeUserStatus(user);
+  if (!isApproved(user)) return res.status(403).json({ error: 'Account not approved' });
+
+  user.profilePhoto = '/uploads/avatars/' + req.file.filename;
+  writeData(data);
+  res.json({ success: true, photoUrl: user.profilePhoto });
 });
 
 // Update user profile

@@ -244,7 +244,7 @@
             
             if (!token) {
                 alert('Please login first');
-                window.close();
+                window.location.replace('login.html');
                 return;
             }
             
@@ -265,16 +265,17 @@
                     document.getElementById('profileInitials').textContent = initials.toUpperCase();
                     
                     // Load profile photo if exists
-                    const profilePhoto = localStorage.getItem('lmsProfilePhoto');
-                    if (profilePhoto) {
+                    if (data.user.profilePhoto) {
+                        const rawPhotoUrl = data.user.profilePhoto;
+                        const photoUrl = rawPhotoUrl.startsWith('http') ? rawPhotoUrl : (API_BASE + rawPhotoUrl);
+                        localStorage.setItem('lmsProfilePhotoUrl', photoUrl);
                         document.getElementById('profilePhotoDisplay').innerHTML = `
-                            <img src="${profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <img src="${photoUrl}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                             <label for="profilePhotoInput" class="camera-btn">
                                 <i class="fas fa-camera"></i>
                             </label>
                             <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
                         `;
-                        // Re-attach event listener
                         attachPhotoInputListener();
                     }
                 } else {
@@ -283,28 +284,65 @@
             } catch (e) {
                 console.error('Error loading profile:', e);
                 alert('Error loading profile: ' + e.message);
+                // Fallback to localStorage values if available
+                const fallbackName = localStorage.getItem('lmsName') || '';
+                const fallbackEmail = localStorage.getItem('lmsEmail') || '';
+                const fallbackSerial = localStorage.getItem('lmsSerial') || '';
+                const fallbackHospital = localStorage.getItem('lmsHospital') || '';
+                const parts = fallbackName.trim().split(' ').filter(Boolean);
+                const initials = parts.length >= 2
+                    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+                    : (parts[0]?.substring(0, 2).toUpperCase() || '');
+                document.getElementById('profileFirstName').value = parts[0] || '';
+                document.getElementById('profileLastName').value = parts[1] || '';
+                document.getElementById('profileEmail').value = fallbackEmail;
+                document.getElementById('profileSerial').value = fallbackSerial;
+                document.getElementById('profileHospital').value = fallbackHospital;
+                document.getElementById('profileInitials').textContent = initials;
+                const cachedPhoto = localStorage.getItem('lmsProfilePhotoUrl');
+                if (cachedPhoto) {
+                    document.getElementById('profilePhotoDisplay').innerHTML = `
+                        <img src="${cachedPhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        <label for="profilePhotoInput" class="camera-btn">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
+                    `;
+                    attachPhotoInputListener();
+                }
             }
         }
 
         // Profile photo upload
         function attachPhotoInputListener() {
-            document.getElementById('profilePhotoInput')?.addEventListener('change', (e) => {
+            document.getElementById('profilePhotoInput')?.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        const photoData = event.target.result;
-                        localStorage.setItem('lmsProfilePhoto', photoData);
-                        document.getElementById('profilePhotoDisplay').innerHTML = `
-                            <img src="${photoData}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                            <label for="profilePhotoInput" class="camera-btn">
-                                <i class="fas fa-camera"></i>
-                            </label>
-                            <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
-                        `;
-                        attachPhotoInputListener();
-                    };
-                    reader.readAsDataURL(file);
+                const token = localStorage.getItem('lmsToken');
+                if (!file || !token) return;
+                try {
+                    const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
+                    const formData = new FormData();
+                    formData.append('token', token);
+                    formData.append('photo', file);
+                    const resp = await fetch(API_BASE + '/api/profile/photo', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await resp.json();
+                    if (!resp.ok) throw new Error(data.error || 'Photo upload failed');
+                    const rawPhotoUrl = data.photoUrl;
+                    const photoUrl = rawPhotoUrl.startsWith('http') ? rawPhotoUrl : (API_BASE + rawPhotoUrl);
+                    localStorage.setItem('lmsProfilePhotoUrl', photoUrl);
+                    document.getElementById('profilePhotoDisplay').innerHTML = `
+                        <img src="${photoUrl}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        <label for="profilePhotoInput" class="camera-btn">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
+                    `;
+                    attachPhotoInputListener();
+                } catch (err) {
+                    alert(err.message || 'Photo upload failed');
                 }
             });
         }
