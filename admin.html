@@ -134,9 +134,12 @@
                                 <th>Last Name</th>
                                 <th>Hospital</th>
                                 <th>Serial Number</th>
+                                <th>Status</th>
+                                <th>Registered</th>
                                 <th>Cranial %</th>
                                 <th>Spine %</th>
                                 <th>ENT %</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="usersTableBody">
@@ -241,15 +244,47 @@
                 data.users.forEach(user => {
                     const row = document.createElement('tr');
                     const progress = data.progress[user.email] || {};
+                    const status = (user.accountStatus || 'pending').toLowerCase();
+                    const statusBadge = status === 'approved'
+                        ? '<span class="badge bg-success">Approved</span>'
+                        : status === 'rejected'
+                            ? '<span class="badge bg-danger">Rejected</span>'
+                            : status === 'restricted'
+                                ? '<span class="badge bg-secondary">Restricted</span>'
+                                : '<span class="badge bg-warning text-dark">Pending</span>';
+                    const registered = user.registeredAt ? new Date(user.registeredAt).toLocaleString() : '-';
+                    const actionButtons = status === 'approved'
+                        ? `
+                            <button class="btn btn-sm btn-secondary" onclick="restrictUser('${user.email}')">
+                                <i class="fa-solid fa-ban"></i> Restrict
+                            </button>
+                          `
+                        : status === 'pending'
+                            ? `
+                                <button class="btn btn-sm btn-success me-2" onclick="approveUser('${user.email}')">
+                                    <i class="fa-solid fa-check"></i> Approve
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="rejectUser('${user.email}')">
+                                    <i class="fa-solid fa-xmark"></i> Reject
+                                </button>
+                              `
+                            : `
+                                <button class="btn btn-sm btn-success" onclick="approveUser('${user.email}')">
+                                    <i class="fa-solid fa-check"></i> Approve
+                                </button>
+                              `;
                     row.innerHTML = `
                         <td>${user.email}</td>
                         <td>${user.firstName}</td>
                         <td>${user.lastName}</td>
                         <td>${user.hospital || '-'}</td>
                         <td>${user.serial || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td>${registered}</td>
                         <td><span class="badge bg-primary">${progress.cranial || 0}%</span></td>
                         <td><span class="badge bg-success">${progress.spine || 0}%</span></td>
                         <td><span class="badge bg-warning">${progress.ent || 0}%</span></td>
+                        <td>${actionButtons}</td>
                     `;
                     tbody.appendChild(row);
                 });
@@ -257,6 +292,56 @@
                 document.getElementById('usersLoading').style.display = 'none';
                 document.getElementById('usersError').textContent = 'Error: ' + err.message;
                 document.getElementById('usersError').style.display = 'block';
+            }
+        }
+
+        async function approveUser(email) {
+            if (!confirm(`Approve ${email}?`)) return;
+            try {
+                const response = await fetch(API_BASE + '/api/admin/users/approve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: adminToken, email })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Approve failed');
+                loadUsers();
+            } catch (err) {
+                alert('Error approving user: ' + err.message);
+            }
+        }
+
+        async function rejectUser(email) {
+            const reason = prompt('Reject reason (optional):', '');
+            if (reason === null) return;
+            try {
+                const response = await fetch(API_BASE + '/api/admin/users/reject', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: adminToken, email, reason })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Reject failed');
+                loadUsers();
+            } catch (err) {
+                alert('Error rejecting user: ' + err.message);
+            }
+        }
+
+        async function restrictUser(email) {
+            const reason = prompt('Restrict reason (optional):', '');
+            if (reason === null) return;
+            try {
+                const response = await fetch(API_BASE + '/api/admin/users/restrict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: adminToken, email, reason })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Restrict failed');
+                loadUsers();
+            } catch (err) {
+                alert('Error restricting user: ' + err.message);
             }
         }
 

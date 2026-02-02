@@ -53,6 +53,10 @@ function isRejected(user) {
   return user && String(user.accountStatus).toLowerCase() === 'rejected';
 }
 
+function isRestricted(user) {
+  return user && String(user.accountStatus).toLowerCase() === 'restricted';
+}
+
 function writeData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
@@ -108,6 +112,11 @@ app.post('/api/login', (req, res) => {
     return res.status(403).json({
       error: 'Your account has been rejected. Please contact support.',
       reason: user.rejectedReason || undefined
+    });
+  }
+  if (isRestricted(user)) {
+    return res.status(403).json({
+      error: 'Your account has been restricted by an administrator. Please contact support.'
     });
   }
   const token = randomBytes(16).toString('hex');
@@ -292,6 +301,23 @@ app.post('/api/admin/users/reject', (req, res) => {
   user.rejectedReason = reason || 'Rejected by admin';
   writeData(data);
   res.json({ success: true, message: 'User rejected' });
+});
+
+// Restrict user (disable login)
+app.post('/api/admin/users/restrict', (req, res) => {
+  const { email, reason } = req.body || {};
+  if (!email) return res.status(400).json({ error: 'Missing fields' });
+  const data = readData();
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) return;
+
+  const user = data.users[email];
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  normalizeUserStatus(user);
+  user.accountStatus = 'restricted';
+  user.rejectedReason = reason || 'Restricted by admin';
+  writeData(data);
+  res.json({ success: true, message: 'User restricted' });
 });
 
 // Get module content

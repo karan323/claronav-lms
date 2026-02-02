@@ -147,6 +147,7 @@
               <label class="form-label"><i class="fas fa-lock me-2"></i>Password</label>
               <input id="password" type="password" class="form-control" placeholder="Enter your password" required>
             </div>
+            <div id="info" style="display:none" class="alert alert-info" role="alert"></div>
             <div id="error" style="display:none" class="error-message"></div>
             <button class="btn btn-login" type="submit">
               <i class="fas fa-sign-in-alt me-2"></i>Sign In
@@ -154,12 +155,21 @@
             <div class="signup-link">
               Don't have an account? <a href="signup.html">Create Account</a>
             </div>
+            <div class="signup-link">
+              Admin access: <a href="admin-login.html">Admin Login</a>
+            </div>
           </form>
         </div>
       </div>
     </div>
   </div>
   <script>
+    const infoEl = document.getElementById('info');
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('status') === 'pending') {
+      infoEl.textContent = 'Your account is pending admin approval. Please wait for approval.';
+      infoEl.style.display = '';
+    }
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();

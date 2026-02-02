@@ -167,6 +167,7 @@
               <input id="password" type="password" class="form-control" placeholder="Create a password" required>
             </div>
             <div id="error" style="display:none" class="error-message"></div>
+            <div id="success" style="display:none" class="alert alert-success" role="alert"></div>
             <button class="btn btn-signup" type="submit">
               <i class="fas fa-user-plus me-2"></i>Create Account
             </button>
@@ -188,6 +189,7 @@
       const hospital = document.getElementById('hospital').value.trim();
       const password = document.getElementById('password').value;
       const errorEl = document.getElementById('error');
+      const successEl = document.getElementById('success');
       try {
         // Use localhost when running locally, otherwise use deployed backend
         const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
@@ -206,11 +208,12 @@
           throw new Error(text || `Signup failed (status ${res.status})`);
         }
         if (!res.ok) throw new Error(j.error || 'Signup failed');
-        localStorage.setItem('lmsToken', j.token);
-        localStorage.setItem('lmsName', j.name);
-        localStorage.setItem('lmsEmail', j.email);
-        // Redirect to dashboard - use replace to prevent back navigation
-        window.location.replace('dashboard.html');
+        errorEl.style.display = 'none';
+        successEl.textContent = j.message || 'Your account is pending admin approval. Please wait for approval.';
+        successEl.style.display = '';
+        setTimeout(() => {
+          window.location.href = 'login.html?status=pending';
+        }, 1200);
       } catch (err) {
         // If error contains HTML, strip tags for display
         let msg = err.message || 'Signup failed';
@@ -220,6 +223,7 @@
         }
         errorEl.textContent = msg;
         errorEl.style.display = '';
+        successEl.style.display = 'none';
       }
     });
   </script>
