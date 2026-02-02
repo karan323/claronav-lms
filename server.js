@@ -4,10 +4,13 @@ const path = require('path');
 const cors = require('cors');
 const { randomBytes } = require('crypto');
 const multer = require('multer');
+const pdfParse = require('pdf-parse');
+const mammoth = require('mammoth');
 
 const DATA_FILE = path.join(__dirname, 'data.json');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 const AVATAR_DIR = path.join(UPLOAD_DIR, 'avatars');
+const AI_UPLOAD_DIR = path.join(UPLOAD_DIR, 'ai');
 
 // Ensure upload directory exists
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -15,6 +18,9 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 }
 if (!fs.existsSync(AVATAR_DIR)) {
   fs.mkdirSync(AVATAR_DIR, { recursive: true });
+}
+if (!fs.existsSync(AI_UPLOAD_DIR)) {
+  fs.mkdirSync(AI_UPLOAD_DIR, { recursive: true });
 }
 
 // Configure multer for file uploads
@@ -45,11 +51,33 @@ const avatarUpload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
+const aiStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, AI_UPLOAD_DIR);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + Math.random().toString(36).substr(2, 9) + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
+});
+
+const aiUpload = multer({
+  storage: aiStorage,
+  limits: { fileSize: 50 * 1024 * 1024 }
+});
+
 function readData() {
   try {
     return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
   } catch (e) {
-    return { users: {}, sessions: {}, progress: {}, admins: {}, moduleContent: { cranial: [], spine: [], ent: [] } };
+    return {
+      users: {},
+      sessions: {},
+      progress: {},
+      admins: {},
+      moduleContent: { cranial: [], spine: [], ent: [] },
+      aiKnowledge: []
+    };
   }
 }
 
@@ -78,6 +106,55 @@ function isRestricted(user) {
 
 function writeData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
+function ensureAiKnowledge(data) {
+  if (!data.aiKnowledge) data.aiKnowledge = [];
+}
+
+function normalizeText(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function tokenize(text) {
+  return normalizeText(text)
+    .split(' ')
+    .filter(w => w.length > 2);
+}
+
+function splitSentences(text) {
+  return String(text || '')
+    .replace(/\s+/g, ' ')
+    .split(/(?<=[.!?])\s+/)
+    .filter(s => s && s.trim().length > 0);
+}
+
+async function extractTextFromFile(filePath, mimeType, originalName) {
+  const ext = path.extname(originalName || '').toLowerCase();
+
+  if (mimeType === 'text/plain' || ext === '.txt') {
+    return fs.readFileSync(filePath, 'utf8');
+  }
+
+  if (mimeType === 'application/pdf' || ext === '.pdf') {
+    const buffer = fs.readFileSync(filePath);
+    const parsed = await pdfParse(buffer);
+    return parsed && parsed.text ? parsed.text : '';
+  }
+
+  if (
+    mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    ext === '.docx'
+  ) {
+    const result = await mammoth.extractRawText({ path: filePath });
+    return result && result.value ? result.value : '';
+  }
+
+  throw new Error('Unsupported file type. Please upload TXT, PDF, or DOCX.');
 }
 
 const app = express();
@@ -452,6 +529,154 @@ app.delete('/api/admin/modules/content', (req, res) => {
   writeData(data);
   
   res.json({ success: true, message: 'Content deleted successfully' });
+});
+
+// ============ AI KNOWLEDGE BASE ============
+
+// List AI knowledge entries
+app.get('/api/admin/ai/knowledge', (req, res) => {
+  const data = readData();
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) return;
+
+  ensureAiKnowledge(data);
+  const entries = data.aiKnowledge.map(({ id, title, originalName, mimeType, size, uploadedAt }) => ({
+    id,
+    title,
+    originalName,
+    mimeType,
+    size,
+    uploadedAt
+  }));
+
+  res.json({ success: true, entries });
+});
+
+// Upload AI knowledge file
+app.post('/api/admin/ai/upload', aiUpload.single('file'), async (req, res) => {
+  const { title, token } = req.body || {};
+
+  if (!title || !token || !req.file) {
+    if (req.file && req.file.path) {
+      try { fs.unlinkSync(req.file.path); } catch (e) { /* ignore */ }
+    }
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const data = readData();
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) {
+    if (req.file && req.file.path) {
+      try { fs.unlinkSync(req.file.path); } catch (e) { /* ignore */ }
+    }
+    return;
+  }
+
+  try {
+    ensureAiKnowledge(data);
+    const extractedText = await extractTextFromFile(req.file.path, req.file.mimetype, req.file.originalname);
+    const cleanedText = String(extractedText || '').trim();
+
+    if (!cleanedText) {
+      try { fs.unlinkSync(req.file.path); } catch (e) { /* ignore */ }
+      return res.status(400).json({ error: 'No readable text found in file' });
+    }
+
+    const entry = {
+      id: randomBytes(8).toString('hex'),
+      title,
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      mimeType: req.file.mimetype,
+      size: req.file.size,
+      text: cleanedText,
+      uploadedAt: new Date().toISOString()
+    };
+
+    data.aiKnowledge.push(entry);
+    writeData(data);
+
+    res.json({ success: true, entry: { id: entry.id, title: entry.title, originalName: entry.originalName } });
+  } catch (err) {
+    if (req.file && req.file.path) {
+      try { fs.unlinkSync(req.file.path); } catch (e) { /* ignore */ }
+    }
+    res.status(400).json({ error: err.message || 'Failed to process file' });
+  }
+});
+
+// Delete AI knowledge entry
+app.delete('/api/admin/ai/knowledge', (req, res) => {
+  const { id, token } = req.body || {};
+
+  if (!id || !token) return res.status(400).json({ error: 'Missing required fields' });
+
+  const data = readData();
+  const auth = requireAdmin(req, res, data);
+  if (!auth.ok) return;
+
+  ensureAiKnowledge(data);
+  const idx = data.aiKnowledge.findIndex(item => item.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'Entry not found' });
+
+  const entry = data.aiKnowledge[idx];
+  const filePath = path.join(AI_UPLOAD_DIR, entry.filename || '');
+  if (entry.filename && fs.existsSync(filePath)) {
+    try { fs.unlinkSync(filePath); } catch (e) { console.error('Error deleting AI file:', e); }
+  }
+
+  data.aiKnowledge.splice(idx, 1);
+  writeData(data);
+
+  res.json({ success: true, message: 'Entry deleted' });
+});
+
+// Public AI chat endpoint
+app.post('/api/ai/chat', (req, res) => {
+  const { question } = req.body || {};
+  if (!question || !String(question).trim()) {
+    return res.status(400).json({ error: 'Missing question' });
+  }
+
+  const data = readData();
+  ensureAiKnowledge(data);
+
+  if (data.aiKnowledge.length === 0) {
+    return res.json({
+      success: true,
+      answer: 'No training material is available yet. Please try again later.'
+    });
+  }
+
+  const questionTokens = tokenize(question);
+  let best = { score: 0, sentence: '', title: '' };
+
+  data.aiKnowledge.forEach(entry => {
+    const sentences = splitSentences(entry.text);
+    sentences.forEach(sentence => {
+      const tokens = tokenize(sentence);
+      let overlap = 0;
+      questionTokens.forEach(q => {
+        if (tokens.includes(q)) overlap += 1;
+      });
+      if (overlap > best.score) {
+        best = { score: overlap, sentence: sentence.trim(), title: entry.title };
+      }
+    });
+  });
+
+  if (!best.sentence) {
+    return res.json({
+      success: true,
+      answer: 'I could not find a relevant answer in the training material. Try rephrasing your question.'
+    });
+  }
+
+  res.json({
+    success: true,
+    answer: best.sentence,
+    sourceTitle: best.title || undefined
+  });
 });
 
 // Serve uploaded files
