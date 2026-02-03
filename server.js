@@ -2,7 +2,8 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
-const { randomBytes } = require('crypto');
+const { randomBytes, createHash } = require('crypto');
+const nodemailer = require('nodemailer');
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
@@ -11,6 +12,7 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 const AVATAR_DIR = path.join(UPLOAD_DIR, 'avatars');
 const AI_UPLOAD_DIR = path.join(UPLOAD_DIR, 'ai');
+const OTP_TTL_MS = 10 * 60 * 1000;
 
 // Ensure upload directory exists
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -85,6 +87,7 @@ function normalizeUserStatus(user) {
   if (!user) return user;
   if (!user.accountStatus) user.accountStatus = 'approved';
   if (!user.registeredAt) user.registeredAt = new Date().toISOString();
+  if (user.emailVerified === undefined) user.emailVerified = true;
   return user;
 }
 
@@ -106,6 +109,53 @@ function isRestricted(user) {
 
 function writeData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
+function hashOtp(otp) {
+  return createHash('sha256').update(String(otp)).digest('hex');
+}
+
+function generateOtp() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function setUserOtp(user) {
+  const otp = generateOtp();
+  user.otpHash = hashOtp(otp);
+  user.otpExpiresAt = new Date(Date.now() + OTP_TTL_MS).toISOString();
+  user.emailVerified = false;
+  return otp;
+}
+
+function isOtpValid(user, otp) {
+  if (!user || !user.otpHash || !user.otpExpiresAt) return false;
+  const expiresAt = new Date(user.otpExpiresAt).getTime();
+  if (Number.isNaN(expiresAt) || Date.now() > expiresAt) return false;
+  return user.otpHash === hashOtp(otp);
+}
+
+function getMailer() {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  if (!user || !pass) return null;
+  return nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: { user, pass }
+  });
+}
+
+async function sendOtpEmail(email, otp) {
+  const transporter = getMailer();
+  if (!transporter) throw new Error('Email service not configured');
+  const fromName = process.env.SMTP_FROM_NAME || 'Claronav LMS';
+  await transporter.sendMail({
+    from: `${fromName} <${process.env.GMAIL_USER}>`,
+    to: email,
+    subject: 'Your Claronav LMS verification code',
+    text: `Your verification code is ${otp}. It expires in 10 minutes.`
+  });
 }
 
 function ensureAiKnowledge(data) {
@@ -185,13 +235,57 @@ app.post('/api/signup', (req, res) => {
     hospital,
     password,
     accountStatus: 'pending',
-    registeredAt: new Date().toISOString()
+    registeredAt: new Date().toISOString(),
+    emailVerified: false
   };
+  const otp = setUserOtp(data.users[email]);
   writeData(data);
-  res.json({
-    success: true,
-    message: 'Your account is pending admin approval. Please wait for approval.'
-  });
+  sendOtpEmail(email, otp)
+    .then(() => {
+      res.json({
+        success: true,
+        requiresVerification: true,
+        message: 'We sent a verification code to your email.'
+      });
+    })
+    .catch((err) => {
+      console.error('Email send error:', err && err.message);
+      res.status(500).json({ error: 'Could not send verification email. Please try again later.' });
+    });
+});
+
+app.post('/api/signup/verify-otp', (req, res) => {
+  const { email, otp } = req.body || {};
+  if (!email || !otp) return res.status(400).json({ error: 'Missing fields' });
+  const data = readData();
+  const user = data.users[email];
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  normalizeUserStatus(user);
+  if (user.emailVerified) return res.json({ success: true, message: 'Email already verified.' });
+  if (!isOtpValid(user, otp)) return res.status(400).json({ error: 'Invalid or expired verification code.' });
+  user.emailVerified = true;
+  user.otpHash = undefined;
+  user.otpExpiresAt = undefined;
+  writeData(data);
+  res.json({ success: true, message: 'Email verified. Your account is pending admin approval.' });
+});
+
+app.post('/api/signup/resend-otp', (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ error: 'Missing fields' });
+  const data = readData();
+  const user = data.users[email];
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  normalizeUserStatus(user);
+  if (user.emailVerified) return res.json({ success: true, message: 'Email already verified.' });
+  const otp = setUserOtp(user);
+  writeData(data);
+  sendOtpEmail(email, otp)
+    .then(() => res.json({ success: true, message: 'Verification code resent.' }))
+    .catch((err) => {
+      console.error('Email send error:', err && err.message);
+      res.status(500).json({ error: 'Could not send verification email. Please try again later.' });
+    });
 });
 
 app.post('/api/login', (req, res) => {
@@ -201,6 +295,9 @@ app.post('/api/login', (req, res) => {
   const user = data.users[email];
   if (!user || user.password !== password) return res.status(401).json({ error: 'Invalid credentials' });
   normalizeUserStatus(user);
+  if (!user.emailVerified) {
+    return res.status(403).json({ error: 'Please verify your email to continue.' });
+  }
   if (isPending(user)) {
     return res.status(403).json({ error: 'Your account is pending admin approval. Please wait for approval.' });
   }
