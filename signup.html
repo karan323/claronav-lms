@@ -77,6 +77,19 @@
       border-color: var(--primary-blue);
       box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.15);
     }
+    .form-control.is-invalid {
+      border-color: #dc3545;
+    }
+    .form-control.is-valid {
+      border-color: #198754;
+    }
+    .invalid-feedback {
+      display: none;
+    }
+    .form-control.is-invalid ~ .invalid-feedback,
+    .form-check-input.is-invalid ~ .invalid-feedback {
+      display: block;
+    }
     .btn-signup {
       background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
       color: white;
@@ -91,6 +104,28 @@
       transform: translateY(-2px);
       box-shadow: 0 10px 25px rgba(0, 102, 204, 0.3);
       color: white;
+    }
+    .btn-signup:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .password-wrapper {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #666;
+      padding: 0.25rem 0.5rem;
+    }
+    .toggle-password:hover {
+      color: var(--dark-blue);
     }
     .login-link {
       text-align: center;
@@ -139,36 +174,54 @@
             <h2>Create Account</h2>
             <p>Join the Navient training platform</p>
           </div>
-          <form id="signupForm">
+          <form id="signupForm" novalidate>
             <div class="row mb-3">
               <div class="col-md-6">
-                <label class="form-label"><i class="fas fa-user me-2"></i>First Name</label>
-                <input id="firstName" class="form-control" placeholder="Enter first name" required>
+                <label class="form-label" for="firstName"><i class="fas fa-user me-2"></i>First Name</label>
+                <input id="firstName" name="firstName" class="form-control" placeholder="Enter first name" autocomplete="given-name" required>
+                <div class="invalid-feedback">Please enter your first name.</div>
               </div>
               <div class="col-md-6">
-                <label class="form-label"><i class="fas fa-user me-2"></i>Last Name</label>
-                <input id="lastName" class="form-control" placeholder="Enter last name" required>
+                <label class="form-label" for="lastName"><i class="fas fa-user me-2"></i>Last Name</label>
+                <input id="lastName" name="lastName" class="form-control" placeholder="Enter last name" autocomplete="family-name" required>
+                <div class="invalid-feedback">Please enter your last name.</div>
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label"><i class="fas fa-envelope me-2"></i>Email Address</label>
-              <input id="email" type="email" class="form-control" placeholder="Enter your email" required>
+              <label class="form-label" for="email"><i class="fas fa-envelope me-2"></i>Email Address</label>
+              <input id="email" name="email" type="email" class="form-control" placeholder="Enter your email" autocomplete="email" inputmode="email" autocapitalize="none" required>
+              <div class="invalid-feedback">Please enter a valid email address.</div>
             </div>
             <div class="mb-3">
-              <label class="form-label"><i class="fas fa-barcode me-2"></i>System Serial Number</label>
-              <input id="serial" class="form-control" placeholder="Enter system serial number" required>
+              <label class="form-label" for="serial"><i class="fas fa-barcode me-2"></i>System Serial Number</label>
+              <input id="serial" name="serial" class="form-control" placeholder="Enter system serial number" minlength="6" maxlength="20" pattern="[A-Za-z0-9\-]+" autocomplete="off" required>
+              <div class="invalid-feedback">Serial should be 6–20 characters (letters, numbers, hyphen).</div>
             </div>
             <div class="mb-3">
-              <label class="form-label"><i class="fas fa-hospital me-2"></i>Hospital Name</label>
-              <input id="hospital" class="form-control" placeholder="Enter hospital name" required>
+              <label class="form-label" for="hospital"><i class="fas fa-hospital me-2"></i>Hospital Name</label>
+              <input id="hospital" name="hospital" class="form-control" placeholder="Enter hospital name" autocomplete="organization" required>
+              <div class="invalid-feedback">Please enter your hospital name.</div>
             </div>
             <div class="mb-3">
-              <label class="form-label"><i class="fas fa-lock me-2"></i>Password</label>
-              <input id="password" type="password" class="form-control" placeholder="Create a password" required>
+              <label class="form-label" for="password"><i class="fas fa-lock me-2"></i>Password</label>
+              <div class="password-wrapper">
+                <input id="password" name="password" type="password" class="form-control" placeholder="Create a password" minlength="8" autocomplete="new-password" required>
+                <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <div class="invalid-feedback">Password must be at least 8 characters.</div>
+              </div>
             </div>
-            <div id="error" style="display:none" class="error-message"></div>
-            <div id="success" style="display:none" class="alert alert-success" role="alert"></div>
-            <button class="btn btn-signup" type="submit">
+            <div class="mb-3 form-check">
+              <input class="form-check-input" type="checkbox" id="terms" required>
+              <label class="form-check-label" for="terms">
+                I agree to the <a href="#" onclick="return false;">Terms</a> and <a href="#" onclick="return false;">Privacy Policy</a>
+              </label>
+              <div class="invalid-feedback">You must agree before creating an account.</div>
+            </div>
+            <div id="error" style="display:none" class="error-message" aria-live="polite"></div>
+            <div id="success" style="display:none" class="alert alert-success" role="alert" aria-live="polite"></div>
+            <button class="btn btn-signup" type="submit" id="signupBtn">
               <i class="fas fa-user-plus me-2"></i>Create Account
             </button>
             <div class="login-link">
@@ -180,8 +233,43 @@
     </div>
   </div>
   <script>
-    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    const form = document.getElementById('signupForm');
+    const signupBtn = document.getElementById('signupBtn');
+    const togglePassword = document.getElementById('togglePassword');
+
+    togglePassword.addEventListener('click', () => {
+      const passwordInput = document.getElementById('password');
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      togglePassword.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      togglePassword.innerHTML = isHidden ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    });
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const fields = ['firstName', 'lastName', 'email', 'serial', 'hospital', 'password'];
+      let hasErrors = false;
+
+      fields.forEach(id => {
+        const input = document.getElementById(id);
+        input.classList.remove('is-invalid', 'is-valid');
+        if (!input.checkValidity()) {
+          input.classList.add('is-invalid');
+          hasErrors = true;
+        } else {
+          input.classList.add('is-valid');
+        }
+      });
+
+      const terms = document.getElementById('terms');
+      terms.classList.remove('is-invalid');
+      if (!terms.checked) {
+        terms.classList.add('is-invalid');
+        hasErrors = true;
+      }
+
+      if (hasErrors) return;
+
       const firstName = document.getElementById('firstName').value.trim();
       const lastName = document.getElementById('lastName').value.trim();
       const email = document.getElementById('email').value.trim();
@@ -190,6 +278,11 @@
       const password = document.getElementById('password').value;
       const errorEl = document.getElementById('error');
       const successEl = document.getElementById('success');
+
+      signupBtn.disabled = true;
+      const originalBtnHtml = signupBtn.innerHTML;
+      signupBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Creating account...';
+
       try {
         // Use localhost when running locally, otherwise use deployed backend
         const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
@@ -209,11 +302,9 @@
         }
         if (!res.ok) throw new Error(j.error || 'Signup failed');
         errorEl.style.display = 'none';
-        successEl.textContent = j.message || 'Your account is pending admin approval. Please wait for approval.';
+        successEl.innerHTML = (j.message || 'Your account is pending admin approval. Please wait for approval.') +
+          ' <div class="mt-2"><a href="login.html?status=pending" class="btn btn-sm btn-outline-success">Go to Sign In</a></div>';
         successEl.style.display = '';
-        setTimeout(() => {
-          window.location.href = 'login.html?status=pending';
-        }, 1200);
       } catch (err) {
         // If error contains HTML, strip tags for display
         let msg = err.message || 'Signup failed';
@@ -224,6 +315,9 @@
         errorEl.textContent = msg;
         errorEl.style.display = '';
         successEl.style.display = 'none';
+      } finally {
+        signupBtn.disabled = false;
+        signupBtn.innerHTML = originalBtnHtml;
       }
     });
   </script>

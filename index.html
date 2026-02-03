@@ -185,39 +185,6 @@
             font-size: 1rem;
         }
 
-        /* AI Chat Modal */
-        .ai-chat-body {
-            max-height: 55vh;
-            overflow-y: auto;
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 1rem;
-        }
-        .ai-chat-message {
-            padding: 0.6rem 0.9rem;
-            border-radius: 12px;
-            margin-bottom: 0.75rem;
-            max-width: 85%;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-        .ai-chat-message.user {
-            margin-left: auto;
-            background: #e6f2ff;
-            color: #003d7a;
-        }
-        .ai-chat-message.bot {
-            margin-right: auto;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            color: #2d3e50;
-        }
-        .ai-chat-source {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 0.35rem;
-        }
-
         .dropdown-divider {
             height: 1px;
             background: #E0E0E0;
@@ -761,11 +728,6 @@
                         <a class="nav-link" href="#footer">Contact Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#aiChatModal">
-                            <i class="fas fa-robot me-1"></i> AI Chat
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a href="login.html" id="loginBtn" class="btn btn-nav ms-2">Login / Sign up</a>
                     </li>
                 </ul>
@@ -853,28 +815,6 @@
             </div>
         </div>
     </section>
-
-    <!-- AI Chat Modal -->
-    <div class="modal fade" id="aiChatModal" tabindex="-1" aria-labelledby="aiChatModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="aiChatModalLabel"><i class="fas fa-robot me-2"></i>AI Chat Assistant</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="aiChatBody" class="ai-chat-body mb-3"></div>
-                    <form id="aiChatForm" class="d-flex gap-2">
-                        <input type="text" id="aiChatInput" class="form-control" placeholder="Ask a question about Navient training..." required>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </form>
-                    <div class="text-muted small mt-2">Answers are based on uploaded training materials.</div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Footer -->
     <footer class="footer" id="footer">
@@ -1071,53 +1011,6 @@
         // Initialize on load
         updateUserNav();
 
-        // AI Chat
-        const aiChatBody = document.getElementById('aiChatBody');
-        const aiChatForm = document.getElementById('aiChatForm');
-        const aiChatInput = document.getElementById('aiChatInput');
-
-        function addChatMessage(text, role, sourceTitle) {
-            const message = document.createElement('div');
-            message.className = `ai-chat-message ${role}`;
-            message.textContent = text;
-
-            if (role === 'bot' && sourceTitle) {
-                const source = document.createElement('div');
-                source.className = 'ai-chat-source';
-                source.textContent = 'Source: ' + sourceTitle;
-                message.appendChild(source);
-            }
-
-            aiChatBody.appendChild(message);
-            aiChatBody.scrollTop = aiChatBody.scrollHeight;
-        }
-
-        aiChatForm?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const question = aiChatInput.value.trim();
-            if (!question) return;
-
-            addChatMessage(question, 'user');
-            aiChatInput.value = '';
-            addChatMessage('Searching the training material...', 'bot');
-
-            try {
-                const response = await fetch(API_BASE + '/api/ai/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question })
-                });
-                const data = await response.json();
-                aiChatBody.lastChild?.remove();
-
-                if (!response.ok) throw new Error(data.error || 'Chat failed');
-
-                addChatMessage(data.answer || 'No response available.', 'bot', data.sourceTitle);
-            } catch (err) {
-                aiChatBody.lastChild?.remove();
-                addChatMessage('Sorry, I could not get an answer. Please try again.', 'bot');
-            }
-        });
     </script>
 </body>
 </html>

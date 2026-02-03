@@ -114,11 +114,6 @@
                     <i class="fa-solid fa-file-upload"></i> Module Content
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai" type="button" role="tab">
-                    <i class="fa-solid fa-robot"></i> AI Training
-                </button>
-            </li>
         </ul>
 
         <!-- Tab Content -->
@@ -216,46 +211,6 @@
                 <div id="moduleContents"></div>
             </div>
 
-            <!-- Tab 3: AI Training -->
-            <div class="tab-pane fade" id="ai" role="tabpanel">
-                <h3 class="mb-4">AI Training Knowledge Base</h3>
-                <div id="aiError" class="alert alert-danger" style="display:none;"></div>
-
-                <div class="card mb-5">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fa-solid fa-brain"></i> Upload AI Training File</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="aiUploadForm" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="aiTitle" class="form-label">Document Title:</label>
-                                <input type="text" class="form-control" id="aiTitle" placeholder="e.g., Navient Setup Procedure" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="aiFile" class="form-label">Upload File (TXT, PDF, DOCX):</label>
-                                <div class="upload-zone" id="aiUploadZone">
-                                    <i class="fa-solid fa-file-arrow-up fa-3x mb-3" style="color: #667eea;"></i>
-                                    <p class="mb-2"><strong>Drag & drop your file here</strong></p>
-                                    <p class="text-muted small">or click to browse</p>
-                                    <input type="file" id="aiFile" class="form-control" style="display:none;" accept=".txt,.pdf,.docx" required>
-                                </div>
-                            </div>
-                            <div class="mb-3" id="aiFileNameDisplay" style="display:none;">
-                                <small class="text-success"><i class="fa-solid fa-check-circle"></i> File selected: <span id="aiSelectedFileName"></span></small>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-custom">
-                                <i class="fa-solid fa-upload"></i> Upload to AI Knowledge
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <h5 class="mt-5 mb-3">Current AI Knowledge Files</h5>
-                <div id="aiLoading" class="alert alert-info">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Loading AI knowledge base...
-                </div>
-                <div id="aiKnowledgeList"></div>
-            </div>
         </div>
     </div>
 
@@ -541,142 +496,9 @@
             }
         }
 
-        // Load AI knowledge entries
-        async function loadAiKnowledge() {
-            try {
-                const response = await fetch(API_BASE + '/api/admin/ai/knowledge?token=' + encodeURIComponent(adminToken));
-                const data = await response.json();
-
-                if (!response.ok) throw new Error(data.error || 'Failed to fetch AI knowledge');
-
-                document.getElementById('aiLoading').style.display = 'none';
-                const list = document.getElementById('aiKnowledgeList');
-                list.innerHTML = '';
-
-                if (!data.entries || data.entries.length === 0) {
-                    list.innerHTML = '<p class="text-muted">No AI training files uploaded yet.</p>';
-                    return;
-                }
-
-                data.entries.forEach(entry => {
-                    const card = document.createElement('div');
-                    card.className = 'module-card';
-
-                    const uploadedAt = entry.uploadedAt ? new Date(entry.uploadedAt).toLocaleString() : '-';
-                    card.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h5 class="mb-2">${entry.title}</h5>
-                                <div class="text-muted small">${entry.originalName} • ${entry.mimeType || 'file'} • ${uploadedAt}</div>
-                            </div>
-                            <button class="btn btn-sm btn-danger" onclick="deleteAiEntry('${entry.id}')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                    list.appendChild(card);
-                });
-            } catch (err) {
-                document.getElementById('aiLoading').style.display = 'none';
-                document.getElementById('aiError').textContent = 'Error: ' + err.message;
-                document.getElementById('aiError').style.display = 'block';
-            }
-        }
-
-        // AI upload drag-drop
-        const aiUploadZone = document.getElementById('aiUploadZone');
-        const aiFileInput = document.getElementById('aiFile');
-
-        aiUploadZone.addEventListener('click', () => aiFileInput.click());
-
-        aiUploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            aiUploadZone.classList.add('dragover');
-        });
-
-        aiUploadZone.addEventListener('dragleave', () => {
-            aiUploadZone.classList.remove('dragover');
-        });
-
-        aiUploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            aiUploadZone.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                aiFileInput.files = files;
-                updateAiFileDisplay();
-            }
-        });
-
-        aiFileInput.addEventListener('change', updateAiFileDisplay);
-
-        function updateAiFileDisplay() {
-            if (aiFileInput.files.length > 0) {
-                document.getElementById('aiFileNameDisplay').style.display = 'block';
-                document.getElementById('aiSelectedFileName').textContent = aiFileInput.files[0].name;
-            } else {
-                document.getElementById('aiFileNameDisplay').style.display = 'none';
-            }
-        }
-
-        // AI upload form
-        document.getElementById('aiUploadForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const title = document.getElementById('aiTitle').value;
-            const file = document.getElementById('aiFile').files[0];
-
-            if (!file) {
-                alert('Please select a file');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('title', title);
-            formData.append('file', file);
-            formData.append('token', adminToken);
-
-            try {
-                const response = await fetch(API_BASE + '/api/admin/ai/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Upload failed');
-
-                alert('AI training file uploaded successfully!');
-                document.getElementById('aiUploadForm').reset();
-                document.getElementById('aiFileNameDisplay').style.display = 'none';
-                loadAiKnowledge();
-            } catch (err) {
-                alert('Error uploading AI file: ' + err.message);
-            }
-        });
-
-        async function deleteAiEntry(id) {
-            if (!confirm('Delete this AI training file?')) return;
-
-            try {
-                const response = await fetch(API_BASE + '/api/admin/ai/knowledge', {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, token: adminToken })
-                });
-
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Delete failed');
-
-                loadAiKnowledge();
-            } catch (err) {
-                alert('Error deleting AI file: ' + err.message);
-            }
-        }
-
         // Initialize
         loadUsers();
         loadModuleContent();
-        loadAiKnowledge();
 
         // Bootstrap tab fallback
         try {
