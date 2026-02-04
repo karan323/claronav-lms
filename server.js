@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -134,24 +135,42 @@ function isOtpValid(user, otp) {
   return user.otpHash === hashOtp(otp);
 }
 
-function getMailer() {
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD;
+function isDevEnv() {
+  return String(process.env.NODE_ENV || '').toLowerCase() !== 'production';
+}
+
+function getMailerConfig() {
+  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const port = Number(process.env.SMTP_PORT || (host === 'smtp.gmail.com' ? 465 : 587));
+  const secure = String(process.env.SMTP_SECURE || (port === 465)).toLowerCase() === 'true';
+  const user = process.env.SMTP_USER || process.env.GMAIL_USER;
+  const pass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD;
   if (!user || !pass) return null;
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: { user, pass }
-  });
+  const timeoutMs = Number(process.env.MAIL_TIMEOUT_MS || 10000);
+  return {
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+    connectionTimeout: timeoutMs,
+    greetingTimeout: timeoutMs,
+    socketTimeout: timeoutMs
+  };
+}
+
+function getMailer() {
+  const cfg = getMailerConfig();
+  if (!cfg) return null;
+  return nodemailer.createTransport(cfg);
 }
 
 async function sendOtpEmail(email, otp) {
   const transporter = getMailer();
-  if (!transporter) throw new Error('Email service not configured');
+  if (!transporter) throw new Error('Email service not configured. Set SMTP_HOST/SMTP_USER/SMTP_PASS (or GMAIL_USER/GMAIL_APP_PASSWORD).');
   const fromName = process.env.SMTP_FROM_NAME || 'Claronav LMS';
+  const fromUser = process.env.SMTP_USER || process.env.GMAIL_USER;
   await transporter.sendMail({
-    from: `${fromName} <${process.env.GMAIL_USER}>`,
+    from: `${fromName} <${fromUser}>`,
     to: email,
     subject: 'Your Claronav LMS verification code',
     text: `Your verification code is ${otp}. It expires in 10 minutes.`
@@ -250,7 +269,9 @@ app.post('/api/signup', (req, res) => {
     })
     .catch((err) => {
       console.error('Email send error:', err && err.message);
-      res.status(500).json({ error: 'Could not send verification email. Please try again later.' });
+      const payload = { error: 'Could not send verification email. Please try again later.' };
+      if (isDevEnv() && err && err.message) payload.detail = err.message;
+      res.status(500).json(payload);
     });
 });
 
@@ -284,7 +305,9 @@ app.post('/api/signup/resend-otp', (req, res) => {
     .then(() => res.json({ success: true, message: 'Verification code resent.' }))
     .catch((err) => {
       console.error('Email send error:', err && err.message);
-      res.status(500).json({ error: 'Could not send verification email. Please try again later.' });
+      const payload = { error: 'Could not send verification email. Please try again later.' };
+      if (isDevEnv() && err && err.message) payload.detail = err.message;
+      res.status(500).json(payload);
     });
 });
 

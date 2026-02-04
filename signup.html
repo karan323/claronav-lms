@@ -315,8 +315,11 @@
       signupBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Creating account...';
 
       try {
-        // Use localhost when running locally, otherwise use deployed backend
-        const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
+        // Use current origin when served by backend; fall back for file:// usage
+        const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        const hasHttpOrigin = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+        const defaultLocalBase = hasHttpOrigin ? window.location.origin : 'http://localhost:3000';
+        const API_BASE = localStorage.getItem('API_BASE') || (isLocalHost ? defaultLocalBase : 'https://claronav-lms.onrender.com');
         const res = await fetch(API_BASE + '/api/signup', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, firstName, lastName, serial, hospital, password })
@@ -331,7 +334,10 @@
           // server returned HTML (likely 404 from static host) or plain text error
           throw new Error(text || `Signup failed (status ${res.status})`);
         }
-        if (!res.ok) throw new Error(j.error || 'Signup failed');
+        if (!res.ok) {
+          const message = j && j.error ? (j.detail ? `${j.error} (${j.detail})` : j.error) : 'Signup failed';
+          throw new Error(message);
+        }
         errorEl.style.display = 'none';
         successEl.textContent = j.message || 'We sent a verification code to your email.';
         successEl.style.display = '';
@@ -373,13 +379,19 @@
 
       verifyOtpBtn.disabled = true;
       try {
-        const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
+        const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        const hasHttpOrigin = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+        const defaultLocalBase = hasHttpOrigin ? window.location.origin : 'http://localhost:3000';
+        const API_BASE = localStorage.getItem('API_BASE') || (isLocalHost ? defaultLocalBase : 'https://claronav-lms.onrender.com');
         const res = await fetch(API_BASE + '/api/signup/verify-otp', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: pendingEmail, otp })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Verification failed');
+        if (!res.ok) {
+          const message = data && data.error ? (data.detail ? `${data.error} (${data.detail})` : data.error) : 'Verification failed';
+          throw new Error(message);
+        }
         errorEl.style.display = 'none';
         successEl.innerHTML = (data.message || 'Email verified.') +
           ' <div class="mt-2"><a href="login.html?status=pending" class="btn btn-sm btn-outline-success">Go to Sign In</a></div>';
@@ -398,13 +410,19 @@
       const successEl = document.getElementById('success');
       resendOtpBtn.disabled = true;
       try {
-        const API_BASE = localStorage.getItem('API_BASE') || (window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://claronav-lms.onrender.com');
+        const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        const hasHttpOrigin = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+        const defaultLocalBase = hasHttpOrigin ? window.location.origin : 'http://localhost:3000';
+        const API_BASE = localStorage.getItem('API_BASE') || (isLocalHost ? defaultLocalBase : 'https://claronav-lms.onrender.com');
         const res = await fetch(API_BASE + '/api/signup/resend-otp', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: pendingEmail })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Resend failed');
+        if (!res.ok) {
+          const message = data && data.error ? (data.detail ? `${data.error} (${data.detail})` : data.error) : 'Resend failed';
+          throw new Error(message);
+        }
         errorEl.style.display = 'none';
         successEl.textContent = data.message || 'Verification code resent.';
         successEl.style.display = '';
