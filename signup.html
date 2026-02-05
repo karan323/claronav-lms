@@ -148,19 +148,6 @@
       margin-bottom: 1rem;
       border-left: 4px solid #C33;
     }
-    .otp-section {
-      display: none;
-      background: #F8FAFF;
-      border: 1px solid #E6F2FF;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-top: 1rem;
-    }
-    .otp-input {
-      text-align: center;
-      letter-spacing: 0.4rem;
-      font-weight: 600;
-    }
     .home-link {
       position: absolute;
       top: 2rem;
@@ -234,17 +221,6 @@
             </div>
             <div id="error" style="display:none" class="error-message" aria-live="polite"></div>
             <div id="success" style="display:none" class="alert alert-success" role="alert" aria-live="polite"></div>
-            <div id="otpSection" class="otp-section">
-              <div class="mb-2 fw-semibold">Enter the 6-digit verification code sent to your email.</div>
-              <div class="input-group mb-2">
-                <input id="otp" type="text" inputmode="numeric" pattern="\d{6}" maxlength="6" class="form-control otp-input" placeholder="______">
-                <button type="button" class="btn btn-primary" id="verifyOtpBtn">Verify</button>
-              </div>
-              <div class="d-flex justify-content-between align-items-center">
-                <small class="text-muted">Code expires in 10 minutes.</small>
-                <button type="button" class="btn btn-link p-0" id="resendOtpBtn">Resend code</button>
-              </div>
-            </div>
             <button class="btn btn-signup" type="submit" id="signupBtn">
               <i class="fas fa-user-plus me-2"></i>Create Account
             </button>
@@ -260,12 +236,6 @@
     const form = document.getElementById('signupForm');
     const signupBtn = document.getElementById('signupBtn');
     const togglePassword = document.getElementById('togglePassword');
-    const otpSection = document.getElementById('otpSection');
-    const otpInput = document.getElementById('otp');
-    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-    const resendOtpBtn = document.getElementById('resendOtpBtn');
-    let pendingEmail = '';
-    let lockSignup = false;
 
     togglePassword.addEventListener('click', () => {
       const passwordInput = document.getElementById('password');
@@ -277,7 +247,6 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      lockSignup = false;
       const fields = ['firstName', 'lastName', 'email', 'serial', 'hospital', 'password'];
       let hasErrors = false;
 
@@ -339,16 +308,9 @@
           throw new Error(message);
         }
         errorEl.style.display = 'none';
-        successEl.textContent = j.message || 'We sent a verification code to your email.';
+        successEl.innerHTML = (j.message || 'Account created. Your account is pending admin approval.') +
+          ' <div class="mt-2"><a href="login.html?status=pending" class="btn btn-sm btn-outline-success">Go to Sign In</a></div>';
         successEl.style.display = '';
-        pendingEmail = email;
-        otpSection.style.display = 'block';
-        lockSignup = true;
-        [...form.querySelectorAll('input, button')].forEach(el => {
-          if (el.id !== 'otp' && el.id !== 'verifyOtpBtn' && el.id !== 'resendOtpBtn') {
-            el.disabled = true;
-          }
-        });
       } catch (err) {
         // If error contains HTML, strip tags for display
         let msg = err.message || 'Signup failed';
@@ -360,77 +322,8 @@
         errorEl.style.display = '';
         successEl.style.display = 'none';
       } finally {
-        if (!lockSignup) {
-          signupBtn.disabled = false;
-          signupBtn.innerHTML = originalBtnHtml;
-        }
-      }
-    });
-
-    verifyOtpBtn.addEventListener('click', async () => {
-      const otp = otpInput.value.trim();
-      const errorEl = document.getElementById('error');
-      const successEl = document.getElementById('success');
-      if (!/^[0-9]{6}$/.test(otp)) {
-        errorEl.textContent = 'Please enter the 6-digit code.';
-        errorEl.style.display = '';
-        return;
-      }
-
-      verifyOtpBtn.disabled = true;
-      try {
-        const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-        const hasHttpOrigin = window.location.protocol === 'http:' || window.location.protocol === 'https:';
-        const defaultLocalBase = hasHttpOrigin ? window.location.origin : 'http://localhost:3000';
-        const API_BASE = localStorage.getItem('API_BASE') || (isLocalHost ? defaultLocalBase : 'https://claronav-lms.onrender.com');
-        const res = await fetch(API_BASE + '/api/signup/verify-otp', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: pendingEmail, otp })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          const message = data && data.error ? (data.detail ? `${data.error} (${data.detail})` : data.error) : 'Verification failed';
-          throw new Error(message);
-        }
-        errorEl.style.display = 'none';
-        successEl.innerHTML = (data.message || 'Email verified.') +
-          ' <div class="mt-2"><a href="login.html?status=pending" class="btn btn-sm btn-outline-success">Go to Sign In</a></div>';
-        successEl.style.display = '';
-        otpSection.style.display = 'none';
-      } catch (err) {
-        errorEl.textContent = err.message || 'Verification failed';
-        errorEl.style.display = '';
-      } finally {
-        verifyOtpBtn.disabled = false;
-      }
-    });
-
-    resendOtpBtn.addEventListener('click', async () => {
-      const errorEl = document.getElementById('error');
-      const successEl = document.getElementById('success');
-      resendOtpBtn.disabled = true;
-      try {
-        const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-        const hasHttpOrigin = window.location.protocol === 'http:' || window.location.protocol === 'https:';
-        const defaultLocalBase = hasHttpOrigin ? window.location.origin : 'http://localhost:3000';
-        const API_BASE = localStorage.getItem('API_BASE') || (isLocalHost ? defaultLocalBase : 'https://claronav-lms.onrender.com');
-        const res = await fetch(API_BASE + '/api/signup/resend-otp', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: pendingEmail })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          const message = data && data.error ? (data.detail ? `${data.error} (${data.detail})` : data.error) : 'Resend failed';
-          throw new Error(message);
-        }
-        errorEl.style.display = 'none';
-        successEl.textContent = data.message || 'Verification code resent.';
-        successEl.style.display = '';
-      } catch (err) {
-        errorEl.textContent = err.message || 'Resend failed';
-        errorEl.style.display = '';
-      } finally {
-        resendOtpBtn.disabled = false;
+        signupBtn.disabled = false;
+        signupBtn.innerHTML = originalBtnHtml;
       }
     });
   </script>
