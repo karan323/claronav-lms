@@ -69,7 +69,14 @@ const aiUpload = multer({
 
 function readData() {
   try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    if (!data.users) data.users = {};
+    if (!data.sessions) data.sessions = {};
+    if (!data.progress) data.progress = {};
+    if (!data.admins) data.admins = {};
+    if (!data.moduleContent) data.moduleContent = { cranial: [], spine: [], ent: [] };
+    if (!data.aiKnowledge) data.aiKnowledge = [];
+    return data;
   } catch (e) {
     return {
       users: {},
